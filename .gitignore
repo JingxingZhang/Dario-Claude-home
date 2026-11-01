@@ -1,0 +1,8 @@
+# 原书正文（版权）
+mingchao/*/ch*-source.txt
+# 字体可由 setup.sh 重新生成
+mingchao/*/assets/fonts/
+# 音频、视频与渲染产物
+mingchao/*/tools/song.mp3
+mingchao/*/assets/song.wav
+mingchao/*/out/*.mp4
