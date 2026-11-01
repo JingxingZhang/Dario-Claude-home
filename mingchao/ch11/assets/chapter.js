@@ -459,7 +459,7 @@ F.shot('shout', pre(30), (sh) => {
   sh.el({ depth: 0.8, box: [0, 700, 1920, 380] }, (o) => BH.ground(o, 720, 1080, 372));
   sh.el({ box: [460, 300, 320, 600], depth: 0.95 }, (o) => BH.profile(o, 620, 885, 1.3, { flip: true }));
   ['救', '且', '至'].forEach((ch, i) => {
-    const e = sh.el({ box: [1180, 160 + i * 220, 260, 240], depth: 1 }, (o) => BH.text(o.red, ch, 1310, 360 + i * 220, { size: 200, color: P.red }));
+    const e = sh.el({ box: [870, 160 + i * 220, 260, 240], depth: 1 }, (o) => { BH.erase(o.blueT, (c) => c.fillRect(890, 190 + i * 220, 220, 210)); BH.text(o.red, ch, 1000, 360 + i * 220, { size: 200, color: P.red }); });
     const t = at(sh, charT(30, ['救', '要', '到'][i]));
     e.set({ alpha: 0 }, 0).set({ alpha: 1 }, t).from({ scale: 1.4 }, { at: t, dur: 0.22, ease: 'back.out(2.2)' });
     sh.kick(t, 9);
