@@ -225,13 +225,6 @@
   // 两扇朱门（开着）
   BH.doors = (o, dx, y0, y1, dw) => { const k = o.ink; for (const [x, sgn] of [[dx - dw / 2 - 200, 1], [dx + dw / 2, -1]]) { const p = new Path2D(); p.moveTo(x + (sgn > 0 ? 200 : 0), y0 + 40); p.lineTo(x + (sgn > 0 ? 40 : 160), y0); p.lineTo(x + (sgn > 0 ? 40 : 160), y1 + 40); p.lineTo(x + (sgn > 0 ? 200 : 0), y1); p.closePath();
     o.knock(p); o.red.fill(p); k.lineWidth = 6; k.stroke(p); for (let r = 0; r < 7; r++) for (let c = 0; c < 3; c++) { k.beginPath(); k.arc(x + 70 + c * 40 + (sgn < 0 ? -10 : 10), y0 + 80 + r * 75, 7, 0, 7); k.fill(); } } };
-  // 写字楼一角：桌、椅、屏幕、人（screen 屏幕上的字）
-  BH.office = (o, x, y, s = 1, screen = '方案_第10版') => { const d = S.desk(), X = x - 200 * s;
-    for (const p of ['chair', 'desk', 'monitor', 'person', 'head']) { knock(o, d[p], X, y, s); fill(o.ink, d[p], X, y, s); }
-    knock(o, d.cup, X, y, s); fill(o.red, d.cup, X, y, s); line(o.ink, d.cup, X, y, s, false, 3);
-    const [sx, sy, sw, sh] = d.screen;
-    BH.at(o.ink, X, y, s, (c) => { erase(c, (q) => q.fillRect(sx, sy, sw, sh)); BH.text(c, screen, sx + sw / 2, sy + 44, { size: Math.min(28, sw / [...screen].length * 1.1) }); c.fillStyle = INK; for (let i = 0; i < 4; i++) c.fillRect(sx + 18, sy + 62 + i * 11, sw - 36 - (i % 2) * 50, 4); });
-  };
   BH.lantern = (o, x, y, s = 1, glow = true) => { const ln = S.lantern(); if (glow) { const g = o.redT.createRadialGradient(x, y, 10 * s, x, y, 230 * s); g.addColorStop(0, tone(0.85)); g.addColorStop(1, tone(0)); o.redT.fillStyle = g; o.redT.beginPath(); o.redT.arc(x, y, 230 * s, 0, 7); o.redT.fill(); }
     knock(o, ln.body, x, y, s); fill(o.red, ln.body, x, y, s); line(o.ink, ln.body, x, y, s, false, 3); fill(o.ink, ln.caps, x, y, s); };
   // 窗（格子）：rect 内留白，给后面的元素露出来

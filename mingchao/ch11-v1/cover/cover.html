@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN" data-w="1080" data-h="1440" data-composition-variables='[
+  {"id":"signature","type":"string","default":"@张景行"},
+  {"id":"sealText","type":"string","default":"景行"},
+  {"id":"paperSeed","type":"number","default":21}
+]'>
+<head>
+<meta charset="utf-8">
+<title>封面 3:4</title>
+<link rel="stylesheet" href="../assets/fonts.css">
+<style>html,body{margin:0;background:#000}#film{position:relative;width:1080px;height:1440px;overflow:hidden}#stage{display:block}</style>
+<script src="../vendor/gsap.min.js"></script>
+<script src="../vendor/mr.js"></script>
+<script src="../vendor/banhua.js"></script>
+<script src="../assets/shapes.js"></script>
+<script src="../assets/bh-lib.js"></script>
+<script type="application/json" id="song">{"duration":1,"lines":[],"sections":[],"beats":[]}</script>
+</head>
+<body>
+<!-- 抖音主页格子封面 3:4 1080×1440。只改 COVER 和 hero()；导出：node scripts/still.js <章节>/cover/cover.html --at 0.5 --out <章节>/cover/cover.png -->
+<div id="film" data-composition-id="film" data-width="1080" data-height="1440" data-fps="30"><canvas id="stage" width="1080" height="1440"></canvas></div>
+<script>
+const COVER = {
+  label: '大明开局 · 第11集',          // 左上角红签
+  hook: ['守了八十五天', '城门关着'],   // 两行大字，每行 ≤ 7 字；第二行印朱色
+  song: '《城门关着》',                 // 歌名
+  foot: '第十一章 · 1363',             // 原书章节 / 年份
+};
+// 主视觉：一面墙，一扇关着的朱门，墙头一排守兵
+function hero(o) {
+  BH.nightSky(o, 1320, 7, [860, 820, 50]);
+  const d = BH.archWall(o, [0, 900, 1080, 420], [540, 1120, 300], 41);
+  o.knock(d); BH.erase(o.blue, (c) => c.fill(d)); BH.erase(o.blueT, (c) => c.fill(d)); o.red.fill(d); o.ink.lineWidth = 7; o.ink.stroke(d);
+  o.ink.lineWidth = 5; o.ink.beginPath(); o.ink.moveTo(540, 970); o.ink.lineTo(540, 1320); o.ink.stroke();
+  o.ink.fillRect(410, 1180, 260, 16);
+  for (let r = 0; r < 4; r++) for (const sx of [-90, -45, 45, 90]) { o.ink.beginPath(); o.ink.arc(540 + sx, 1040 + r * 60, 6, 0, 7); o.ink.fill(); }
+  for (let x = 0; x < 1080; x += 58) { o.ink.fillRect(x, 870, 36, 30); o.knockRect(x, 870, 36, 30); }
+  for (const x of [130, 330, 750, 950]) BH.sentry(o, x, 870, 0.42);
+}
+const F = BH.film({ cover: true });
+F.shot('cover', 0, (sh) => {
+  sh.el({ box: [0, 640, 1080, 700] }, hero);
+  sh.el({ box: [0, 0, 1080, 760] }, (o) => {
+    o.red.fillRect(60, 64, 470, 84); BH.erase(o.red, (c) => BH.text(c, COVER.label, 295, 122, { size: 44, color: '#000' }));
+    BH.text(o.ink, COVER.hook[0], 540, 400, { size: 150, spacing: 6 });
+    BH.text(o.red, COVER.hook[1], 540, 590, { size: 150, spacing: 6, color: BH.PAL.red });
+    o.ink.fillRect(120, 640, 840, 8);
+  });
+  sh.el({ box: [0, 1300, 1080, 140] }, (o) => { o.knockRect(0, 1320, 1080, 120); BH.text(o.ink, COVER.song, 60, 1392, { size: 56, align: 'left' }); BH.text(o.ink, COVER.foot, 1020, 1392, { size: 40, weight: '600', align: 'right' }); });
+});
+F.finish();
+</script>
+</body>
+</html>
