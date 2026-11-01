@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN" data-w="1080" data-h="1440" data-composition-variables='[
+  {"id":"signature","type":"string","default":"@张景行"},
+  {"id":"sealText","type":"string","default":"景行"},
+  {"id":"paperSeed","type":"number","default":21}
+]'>
+<head>
+<meta charset="utf-8">
+<title>封面 3:4</title>
+<link rel="stylesheet" href="../assets/fonts.css">
+<style>html,body{margin:0;background:#000}#film{position:relative;width:1080px;height:1440px;overflow:hidden}#stage{display:block}</style>
+<script src="../vendor/gsap.min.js"></script>
+<script src="../vendor/mr.js"></script>
+<script src="../vendor/banhua.js"></script>
+<script src="../assets/shapes.js"></script>
+<script src="../assets/bh-lib.js"></script>
+<script type="application/json" id="song">{"duration":1,"lines":[],"sections":[],"beats":[]}</script>
+</head>
+<body>
+<!-- 抖音主页格子封面 3:4 1080×1440。只改 COVER 和 hero()；导出：node scripts/still.js <章节>/cover/cover.html --at 0.5 --out <章节>/cover/cover.png -->
+<div id="film" data-composition-id="film" data-width="1080" data-height="1440" data-fps="30"><canvas id="stage" width="1080" height="1440"></canvas></div>
+<script>
+const COVER = {
+  label: '大明开局 · 第10集',          // 左上角红签
+  hook: ['一封劝谏', '江水在涨'],       // 两行大字，每行 ≤ 7 字；第二行印朱色
+  song: '《江水在涨》',                 // 歌名
+  foot: '第拾章 · 1363',               // 原书章节 / 年份
+};
+// 主视觉：一个最有分量的意象（在 y 760–1300 之间画）
+function hero(o) {
+  BH.sky(o, 700, 1060, 7); BH.sun(o, 820, 860, 110);
+  BH.mount(o, -60, 1140, 1080, 220, 5, 0.6);
+  BH.waves(o, 1060, 1320, 44, 3, 0.35, 1.2);
+  BH.tower(o, 560, 1150, 0.82);
+}
+const F = BH.film({ cover: true });
+F.shot('cover', 0, (sh) => {
+  sh.el({ box: [0, 640, 1080, 700] }, hero);
+  sh.el({ box: [0, 0, 1080, 760] }, (o) => {
+    o.red.fillRect(60, 64, 470, 84); BH.erase(o.red, (c) => BH.text(c, COVER.label, 295, 122, { size: 44, color: '#000' }));
+    BH.text(o.ink, COVER.hook[0], 540, 400, { size: 150, spacing: 6 });
+    BH.text(o.red, COVER.hook[1], 540, 590, { size: 150, spacing: 6, color: BH.PAL.red });
+    o.ink.fillRect(120, 640, 840, 8);
+  });
+  sh.el({ box: [0, 1300, 1080, 140] }, (o) => { o.knockRect(0, 1320, 1080, 120); BH.text(o.ink, COVER.song, 60, 1392, { size: 56, align: 'left' }); BH.text(o.ink, COVER.foot, 1020, 1392, { size: 40, weight: '600', align: 'right' }); });
+});
+F.finish();
+</script>
+</body>
+</html>

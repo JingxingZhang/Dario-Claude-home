@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN" data-composition-variables='[
+  {"id":"series","type":"string","label":"系列名","default":"大明开局","group":"系列"},
+  {"id":"epNo","type":"string","label":"集数（如 03）","default":"01","group":"系列"},
+  {"id":"songTitle","type":"string","label":"歌名","default":"江水在涨","group":"系列"},
+  {"id":"chapNo","type":"string","label":"原书章节序号","default":"第一章","group":"系列"},
+  {"id":"chapTitle","type":"string","label":"原书章节标题","default":"童年","group":"系列"},
+  {"id":"partLine","type":"string","label":"部名（封面、交付说明用）","default":"第壹部 · 朱元璋：从和尚到皇帝","group":"系列"},
+  {"id":"nextNo","type":"string","label":"下一集序号","default":"第2集","group":"片尾"},
+  {"id":"nextTitle","type":"string","label":"下一集歌名或悬念","default":"","group":"片尾"},
+  {"id":"signature","type":"string","label":"右上角署名（留空不显示）","default":"@张景行","group":"署名"},
+  {"id":"sealText","type":"string","label":"署名旁的小印","default":"景行","group":"署名"},
+  {"id":"paperSeed","type":"number","label":"纸纹种子","default":13,"min":1,"max":999,"step":1,"group":"画面"},
+  {"id":"maxMB","type":"number","label":"成品体积上限（MB）","default":100,"min":10,"max":2000,"step":1,"group":"导出"}
+]'>
+<head>
+<meta charset="utf-8">
+<title>大明开局 MV</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<style>html,body{margin:0;background:#000}#film{position:relative;width:1920px;height:1080px;overflow:hidden}#stage{display:block}</style>
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/mr.js"></script>
+<script src="vendor/banhua.js"></script>
+<script src="assets/shapes.js"></script>
+<script src="assets/bh-lib.js"></script>
+<!-- 歌曲数据：scripts/song_sync.py 写进来（逐句、逐字时间、段落、节拍）；新工程里是示例歌 -->
+<script type="application/json" id="song">{}</script>
+</head>
+<body>
+<!-- 16:9 1920×1080、30 fps。主题栏 x 60–910、y 40–136；右上角署名 x 1600 以右、y 170 以上；字幕带 y 905–1080；画面内容放 y 170–890。 -->
+<div id="film" data-composition-id="film" data-width="1920" data-height="1080" data-fps="30"><canvas id="stage" width="1920" height="1080"></canvas></div>
+<!-- 本章分镜写在 assets/chapter.js：const F = BH.film(); F.topic(…); F.shot(…); … F.finish(); -->
+<script src="assets/chapter.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+/* 字体：setup.sh 准备在 ~/.cache/ming-fonts，new_chapter.sh 拷进 assets/fonts（GB2312 子集，SIL OFL 1.1） */
+@font-face { font-family: 'Serif'; font-weight: 600; src: url('fonts/NotoSerifSC-600.woff') format('woff'); }
+@font-face { font-family: 'Serif'; font-weight: 900; src: url('fonts/NotoSerifSC-900.woff') format('woff'); }
+@font-face { font-family: 'WK'; font-weight: 500; src: url('fonts/LXGWWenKai-500.woff') format('woff'); }
+@font-face { font-family: 'Sans'; font-weight: 700; src: url('fonts/NotoSansSC-700.woff') format('woff'); }
+@font-face { font-family: 'Sans'; font-weight: 900; src: url('fonts/NotoSansSC-900.woff') format('woff'); }
