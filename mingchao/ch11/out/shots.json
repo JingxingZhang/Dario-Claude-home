@@ -1,0 +1,751 @@
+{
+ "shots": [
+  {
+   "name": "title",
+   "t0": 0,
+   "t1": 6.255,
+   "trans": "none",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "approach",
+   "t0": 6.255,
+   "t1": 12.213,
+   "trans": "cut",
+   "els": 8,
+   "type": ""
+  },
+  {
+   "name": "gates",
+   "t0": 12.213,
+   "t1": 18.006999999999998,
+   "trans": "paper",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "flood",
+   "t0": 18.006999999999998,
+   "t1": 23.892,
+   "trans": "cut",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "ship",
+   "t0": 23.892,
+   "t1": 29.445999999999998,
+   "trans": "cut",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "army",
+   "t0": 29.445999999999998,
+   "t1": 32.352000000000004,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "run",
+   "t0": 32.352000000000004,
+   "t1": 35.411,
+   "trans": "cut",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "R1a",
+   "t0": 35.411,
+   "t1": 40.257,
+   "trans": "split",
+   "els": 9,
+   "type": "城门关着城门关着"
+  },
+  {
+   "name": "R1b",
+   "t0": 40.257,
+   "t1": 47.553000000000004,
+   "trans": "cut",
+   "els": 10,
+   "type": "墙塌了天亮前又砌上"
+  },
+  {
+   "name": "shields",
+   "t0": 47.553000000000004,
+   "t1": 49.539,
+   "trans": "paper",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "breach",
+   "t0": 49.539,
+   "t1": 52.718,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "xincheng",
+   "t0": 52.718,
+   "t1": 58.665000000000006,
+   "trans": "cut",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "watergate",
+   "t0": 58.665000000000006,
+   "t1": 61.777,
+   "trans": "cut",
+   "els": 7,
+   "type": ""
+  },
+  {
+   "name": "hot",
+   "t0": 61.777,
+   "t1": 64.679,
+   "trans": "cut",
+   "els": 7,
+   "type": ""
+  },
+  {
+   "name": "arrow",
+   "t0": 64.679,
+   "t1": 67.84,
+   "trans": "cut",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "book16",
+   "t0": 67.84,
+   "t1": 71.081,
+   "trans": "cut",
+   "els": 1,
+   "type": ""
+  },
+  {
+   "name": "R2a",
+   "t0": 71.081,
+   "t1": 75.517,
+   "trans": "split",
+   "els": 9,
+   "type": "城门关着城门关着"
+  },
+  {
+   "name": "R2b",
+   "t0": 75.517,
+   "t1": 82.977,
+   "trans": "cut",
+   "els": 10,
+   "type": "墙塌了天亮前又砌上"
+  },
+  {
+   "name": "R2c",
+   "t0": 82.977,
+   "t1": 88.023,
+   "trans": "cut",
+   "els": 9,
+   "type": "城门关着城门关着"
+  },
+  {
+   "name": "night",
+   "t0": 88.023,
+   "t1": 93.634,
+   "trans": "paper",
+   "els": 7,
+   "type": ""
+  },
+  {
+   "name": "ebike",
+   "t0": 93.634,
+   "t1": 99.59700000000001,
+   "trans": "wipe",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "phone",
+   "t0": 99.59700000000001,
+   "t1": 105.667,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "boat",
+   "t0": 105.667,
+   "t1": 108.545,
+   "trans": "wipe",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "walk",
+   "t0": 108.545,
+   "t1": 111.95400000000001,
+   "trans": "cut",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "arrive",
+   "t0": 111.95400000000001,
+   "t1": 114.485,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "book27",
+   "t0": 114.485,
+   "t1": 118.645,
+   "trans": "cut",
+   "els": 1,
+   "type": ""
+  },
+  {
+   "name": "seized",
+   "t0": 118.645,
+   "t1": 121.691,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "below",
+   "t0": 121.691,
+   "t1": 124.275,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "shout",
+   "t0": 124.275,
+   "t1": 127.58,
+   "trans": "cut",
+   "els": 8,
+   "type": ""
+  },
+  {
+   "name": "spears",
+   "t0": 127.58,
+   "t1": 130.679,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "F1",
+   "t0": 130.679,
+   "t1": 135.115,
+   "trans": "split",
+   "els": 9,
+   "type": "城门开着城门开着"
+  },
+  {
+   "name": "F2",
+   "t0": 135.115,
+   "t1": 136.79000000000002,
+   "trans": "cut",
+   "els": 10,
+   "type": "一座城守了八十五天"
+  },
+  {
+   "name": "F3",
+   "t0": 136.79000000000002,
+   "t1": 139.711,
+   "trans": "cut",
+   "els": 9,
+   "type": "城门开着城门开着"
+  },
+  {
+   "name": "F4",
+   "t0": 139.711,
+   "t1": 143.035,
+   "trans": "cut",
+   "els": 11,
+   "type": "喊话的那个人没有进来"
+  },
+  {
+   "name": "dawn",
+   "t0": 143.035,
+   "t1": 147.383,
+   "trans": "paper",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "card",
+   "t0": 147.383,
+   "t1": 158.606,
+   "trans": "paper",
+   "els": 1,
+   "type": ""
+  },
+  {
+   "name": "quiet",
+   "t0": 158.606,
+   "t1": 167.618,
+   "trans": "paper",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "quiet2",
+   "t0": 167.618,
+   "t1": 176.405,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "end",
+   "t0": 176.405,
+   "t1": 179.605,
+   "trans": "cut",
+   "els": 1,
+   "type": ""
+  }
+ ],
+ "song": {
+  "duration": 179.605,
+  "lines": [
+   {
+    "start": 12.513,
+    "end": 16.442,
+    "text": "你守着八个城门　朱文正",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 18.307,
+    "end": 20.982,
+    "text": "一三六三年　四月水涨",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 24.192,
+    "end": 26.529,
+    "text": "江上来了　三层的大船",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 26.972,
+    "end": 29.479,
+    "text": "橹箱裹着铁　船身刷着红漆",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 29.746,
+    "end": 32.445,
+    "text": "号称六十万　连家眷都带来了",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 32.652,
+    "end": 35.704,
+    "text": "手里留两千人　哪个门破去哪个",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 35.661,
+    "end": 39.884,
+    "text": "城门关着　城门关着",
+    "chorus": true,
+    "tag": "Refrain"
+   },
+   {
+    "start": 40.457,
+    "end": 44.526,
+    "text": "墙塌了　天亮前又砌上",
+    "chorus": true,
+    "tag": "Refrain"
+   },
+   {
+    "start": 47.853,
+    "end": 49.864,
+    "text": "抚州门外　竹盾像簸箕",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 49.839,
+    "end": 52.744,
+    "text": "墙塌了二十多丈　邓愈点了火铳",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 53.018,
+    "end": 55.876,
+    "text": "新城门　薛显自己打开了门",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 56.074,
+    "end": 58.782,
+    "text": "带着人冲出去　砍了对面的平章",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 58.965,
+    "end": 61.746,
+    "text": "水关里伸出长槊　有人伸手去抢",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 62.077,
+    "end": 64.59,
+    "text": "第二回　铁钩是烧红的",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 64.979,
+    "end": 67.705,
+    "text": "宫步门上　赵德胜中了一箭",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 68.14,
+    "end": 70.669,
+    "text": "箭进去六寸　他说这是命",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 71.331,
+    "end": 75.766,
+    "text": "城门关着　城门关着",
+    "chorus": true,
+    "tag": "Refrain"
+   },
+   {
+    "start": 75.717,
+    "end": 80.053,
+    "text": "墙塌了　天亮前又砌上",
+    "chorus": true,
+    "tag": "Refrain"
+   },
+   {
+    "start": 83.177,
+    "end": 87.423,
+    "text": "城门关着　城门关着",
+    "chorus": true,
+    "tag": "Refrain"
+   },
+   {
+    "start": 93.934,
+    "end": 96.441,
+    "text": "今天夜里　也有人在路上",
+    "chorus": false,
+    "tag": "Bridge"
+   },
+   {
+    "start": 96.989,
+    "end": 99.574,
+    "text": "电动车的灯　穿过高架桥",
+    "chorus": false,
+    "tag": "Bridge"
+   },
+   {
+    "start": 99.897,
+    "end": 102.608,
+    "text": "手机里有人问　到哪儿了",
+    "chorus": false,
+    "tag": "Bridge"
+   },
+   {
+    "start": 102.858,
+    "end": 105.582,
+    "text": "他说马上就到　马上就到",
+    "chorus": false,
+    "tag": "Bridge"
+   },
+   {
+    "start": 105.967,
+    "end": 108.693,
+    "text": "一条打鱼的小船　从水关出去",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 108.845,
+    "end": 111.606,
+    "text": "张子明夜里赶路　白天躲着",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 112.254,
+    "end": 114.615,
+    "text": "走了半个月　才走到应天",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 114.785,
+    "end": 117.301,
+    "text": "回去告诉文正　再守一个月",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 118.945,
+    "end": 121.877,
+    "text": "走到湖口　他被抓住了",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 121.991,
+    "end": 124.049,
+    "text": "押到城下　让他喊一声投降",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 124.575,
+    "end": 127.421,
+    "text": "他喊的是守住　救兵就要到了",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 127.88,
+    "end": 130.297,
+    "text": "长槊一起落下　在城墙底下",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 130.929,
+    "end": 135.078,
+    "text": "城门开着　城门开着",
+    "chorus": true,
+    "tag": "Final Refrain"
+   },
+   {
+    "start": 135.315,
+    "end": 136.774,
+    "text": "一座城　守了八十五天",
+    "chorus": true,
+    "tag": "Final Refrain"
+   },
+   {
+    "start": 136.99,
+    "end": 139.589,
+    "text": "城门开着　城门开着",
+    "chorus": true,
+    "tag": "Final Refrain"
+   },
+   {
+    "start": 139.911,
+    "end": 142.435,
+    "text": "喊话的那个人　没有进来",
+    "chorus": true,
+    "tag": "Final Refrain"
+   }
+  ],
+  "sections": [
+   {
+    "tag": "Intro",
+    "label": "前奏",
+    "chorus": false,
+    "start": 0,
+    "i": 1,
+    "end": 0.4,
+    "lines": []
+   },
+   {
+    "tag": "Intro",
+    "label": "前奏",
+    "chorus": false,
+    "start": 0.4,
+    "i": 2,
+    "end": 12.513,
+    "lines": []
+   },
+   {
+    "tag": "Verse 1",
+    "label": "主歌1",
+    "chorus": false,
+    "start": 12.513,
+    "i": 3,
+    "end": 35.661,
+    "lines": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   {
+    "tag": "Refrain",
+    "label": "副歌",
+    "chorus": true,
+    "start": 35.661,
+    "i": 4,
+    "end": 47.853,
+    "lines": [
+     7,
+     8
+    ]
+   },
+   {
+    "tag": "Verse 2",
+    "label": "主歌2",
+    "chorus": false,
+    "start": 47.853,
+    "i": 5,
+    "end": 71.331,
+    "lines": [
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ]
+   },
+   {
+    "tag": "Refrain",
+    "label": "副歌",
+    "chorus": true,
+    "start": 71.331,
+    "i": 6,
+    "end": 87.923,
+    "lines": [
+     17,
+     18,
+     19
+    ]
+   },
+   {
+    "tag": "Instrumental",
+    "label": "间奏",
+    "chorus": false,
+    "start": 87.923,
+    "i": 7,
+    "end": 93.934,
+    "lines": []
+   },
+   {
+    "tag": "Bridge",
+    "label": "桥段",
+    "chorus": false,
+    "start": 93.934,
+    "i": 8,
+    "end": 105.967,
+    "lines": [
+     20,
+     21,
+     22,
+     23
+    ]
+   },
+   {
+    "tag": "Verse 3",
+    "label": "主歌3",
+    "chorus": false,
+    "start": 105.967,
+    "i": 9,
+    "end": 130.929,
+    "lines": [
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31
+    ]
+   },
+   {
+    "tag": "Final Refrain",
+    "label": "最后的副歌",
+    "chorus": true,
+    "start": 130.929,
+    "i": 10,
+    "end": 142.835,
+    "lines": [
+     32,
+     33,
+     34,
+     35
+    ]
+   },
+   {
+    "tag": "Outro",
+    "label": "尾奏",
+    "chorus": false,
+    "start": 142.835,
+    "i": 11,
+    "end": 179.605,
+    "lines": []
+   }
+  ],
+  "topics": [
+   {
+    "t": 0,
+    "text": "四月，江水涨到城下"
+   },
+   {
+    "t": 12.213,
+    "text": "八个门，两千人"
+   },
+   {
+    "t": 35.411,
+    "text": "城门关着"
+   },
+   {
+    "t": 47.553000000000004,
+    "text": "铁钩先烧红了"
+   },
+   {
+    "t": 71.081,
+    "text": "城门关着"
+   },
+   {
+    "t": 88.023,
+    "text": "马上就到"
+   },
+   {
+    "t": 105.667,
+    "text": "一条小船出了水关"
+   },
+   {
+    "t": 130.679,
+    "text": "城门开着"
+   },
+   {
+    "t": 143.035,
+    "text": "守了八十五天"
+   },
+   {
+    "t": 176.405,
+    "text": "头功给谁"
+   }
+  ]
+ }
+}
