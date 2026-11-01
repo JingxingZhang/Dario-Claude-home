@@ -1,0 +1,783 @@
+{
+ "shots": [
+  {
+   "name": "title",
+   "t0": 0,
+   "t1": 5.854,
+   "trans": "none",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "siege",
+   "t0": 5.854,
+   "t1": 11.886,
+   "trans": "cut",
+   "els": 10,
+   "type": ""
+  },
+  {
+   "name": "me",
+   "t0": 11.886,
+   "t1": 15.040999999999999,
+   "trans": "paper",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "surrounded",
+   "t0": 15.040999999999999,
+   "t1": 18.072,
+   "trans": "cut",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "order",
+   "t0": 18.072,
+   "t1": 21.057,
+   "trans": "cut",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "boat",
+   "t0": 21.057,
+   "t1": 24.628999999999998,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "walk",
+   "t0": 24.628999999999998,
+   "t1": 27.403,
+   "trans": "cut",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "arrive",
+   "t0": 27.403,
+   "t1": 30.906,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "audience",
+   "t0": 30.906,
+   "t1": 33.685,
+   "trans": "cut",
+   "els": 3,
+   "type": ""
+  },
+  {
+   "name": "lowwater",
+   "t0": 33.685,
+   "t1": 37.379000000000005,
+   "trans": "cut",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "book9",
+   "t0": 37.379000000000005,
+   "t1": 45.502,
+   "trans": "paper",
+   "els": 1,
+   "type": ""
+  },
+  {
+   "name": "C1a",
+   "t0": 45.502,
+   "t1": 48.711,
+   "trans": "split",
+   "els": 8,
+   "type": "城上的人守住啊"
+  },
+  {
+   "name": "C1b",
+   "t0": 48.711,
+   "t1": 52.773999999999994,
+   "trans": "cut",
+   "els": 11,
+   "type": "救兵就要到救兵就要到"
+  },
+  {
+   "name": "C1c",
+   "t0": 52.773999999999994,
+   "t1": 59.111000000000004,
+   "trans": "cut",
+   "els": 9,
+   "type": "守住啊救兵就要到"
+  },
+  {
+   "name": "back",
+   "t0": 59.111000000000004,
+   "t1": 62.001000000000005,
+   "trans": "paper",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "seized",
+   "t0": 62.001000000000005,
+   "t1": 64.796,
+   "trans": "cut",
+   "els": 6,
+   "type": ""
+  },
+  {
+   "name": "offer",
+   "t0": 64.796,
+   "t1": 70.666,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "nod",
+   "t0": 70.666,
+   "t1": 73.917,
+   "trans": "cut",
+   "els": 2,
+   "type": ""
+  },
+  {
+   "name": "march",
+   "t0": 73.917,
+   "t1": 78.187,
+   "trans": "cut",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "lookup",
+   "t0": 78.187,
+   "t1": 84.286,
+   "trans": "cut",
+   "els": 3,
+   "type": ""
+  },
+  {
+   "name": "C2a",
+   "t0": 84.286,
+   "t1": 87.52799999999999,
+   "trans": "split",
+   "els": 8,
+   "type": "城上的人守住啊"
+  },
+  {
+   "name": "C2b",
+   "t0": 87.52799999999999,
+   "t1": 91.601,
+   "trans": "cut",
+   "els": 11,
+   "type": "救兵就要到救兵就要到"
+  },
+  {
+   "name": "C2c",
+   "t0": 91.601,
+   "t1": 95.895,
+   "trans": "cut",
+   "els": 9,
+   "type": "守住啊救兵就要到"
+  },
+  {
+   "name": "i-fuzhou",
+   "t0": 95.895,
+   "t1": 99.43074999999999,
+   "trans": "paper",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "i-xincheng",
+   "t0": 99.43074999999999,
+   "t1": 102.9665,
+   "trans": "cut",
+   "els": 7,
+   "type": ""
+  },
+  {
+   "name": "i-shuiguan",
+   "t0": 102.9665,
+   "t1": 106.50225,
+   "trans": "cut",
+   "els": 8,
+   "type": ""
+  },
+  {
+   "name": "i-gongbu",
+   "t0": 106.50225,
+   "t1": 110.038,
+   "trans": "cut",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "shout",
+   "t0": 110.038,
+   "t1": 113.667,
+   "trans": "wipe",
+   "els": 9,
+   "type": ""
+  },
+  {
+   "name": "hold",
+   "t0": 113.667,
+   "t1": 116.923,
+   "trans": "cut",
+   "els": 3,
+   "type": ""
+  },
+  {
+   "name": "spears",
+   "t0": 116.923,
+   "t1": 120.004,
+   "trans": "cut",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "delivered",
+   "t0": 120.004,
+   "t1": 123.669,
+   "trans": "cut",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "temple",
+   "t0": 123.669,
+   "t1": 127.035,
+   "trans": "paper",
+   "els": 4,
+   "type": ""
+  },
+  {
+   "name": "statues",
+   "t0": 127.035,
+   "t1": 129.634,
+   "trans": "cut",
+   "els": 3,
+   "type": ""
+  },
+  {
+   "name": "book30",
+   "t0": 129.634,
+   "t1": 137.185,
+   "trans": "cut",
+   "els": 1,
+   "type": ""
+  },
+  {
+   "name": "F1",
+   "t0": 137.185,
+   "t1": 140.09400000000002,
+   "trans": "split",
+   "els": 10,
+   "type": "守住了守了八十五天"
+  },
+  {
+   "name": "F2",
+   "t0": 140.09400000000002,
+   "t1": 143.21300000000002,
+   "trans": "cut",
+   "els": 12,
+   "type": "七月救兵到了我没有看到"
+  },
+  {
+   "name": "F3",
+   "t0": 143.21300000000002,
+   "t1": 149.31900000000002,
+   "trans": "cut",
+   "els": 13,
+   "type": "我喊过的那一句救兵就要到"
+  },
+  {
+   "name": "dawn",
+   "t0": 149.31900000000002,
+   "t1": 153.041,
+   "trans": "paper",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "card",
+   "t0": 153.041,
+   "t1": 162.83,
+   "trans": "paper",
+   "els": 1,
+   "type": ""
+  },
+  {
+   "name": "quiet",
+   "t0": 162.83,
+   "t1": 172.8,
+   "trans": "paper",
+   "els": 5,
+   "type": ""
+  },
+  {
+   "name": "end",
+   "t0": 172.8,
+   "t1": 176,
+   "trans": "cut",
+   "els": 1,
+   "type": ""
+  }
+ ],
+ "song": {
+  "duration": 176,
+  "lines": [
+   {
+    "start": 12.186,
+    "end": 15.088,
+    "text": "我叫张子明　洪都城里的千户",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 15.341,
+    "end": 17.84,
+    "text": "一三六三年　城被围得太久",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 18.372,
+    "end": 20.878,
+    "text": "里外断了信　都督点了我的名",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 21.357,
+    "end": 24.19,
+    "text": "一条打鱼的小船　从水关底下走",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 24.929,
+    "end": 27.481,
+    "text": "夜里赶路　天一亮就躲起来",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 27.703,
+    "end": 31.224,
+    "text": "走了半个月　才看见应天的城楼",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 31.206,
+    "end": 33.651,
+    "text": "主上问我　对面的兵怎么样",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 33.985,
+    "end": 36.994,
+    "text": "我说江水在退　他的大船难航",
+    "chorus": false,
+    "tag": "Verse 1"
+   },
+   {
+    "start": 37.679,
+    "end": 41.701,
+    "text": "主上说　回去告诉都督",
+    "chorus": false,
+    "tag": "Pre-Chorus"
+   },
+   {
+    "start": 41.653,
+    "end": 43.519,
+    "text": "坚守一个月　我亲自来打",
+    "chorus": false,
+    "tag": "Pre-Chorus"
+   },
+   {
+    "start": 45.752,
+    "end": 48.324,
+    "text": "城上的人　守住啊",
+    "chorus": true,
+    "tag": "Chorus"
+   },
+   {
+    "start": 48.911,
+    "end": 51.418,
+    "text": "救兵就要到　救兵就要到",
+    "chorus": true,
+    "tag": "Chorus"
+   },
+   {
+    "start": 52.974,
+    "end": 56.365,
+    "text": "守住啊　救兵就要到",
+    "chorus": true,
+    "tag": "Chorus"
+   },
+   {
+    "start": 59.411,
+    "end": 61.975,
+    "text": "我把这句话　揣在怀里往回赶",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 62.301,
+    "end": 64.38,
+    "text": "走到湖口　被汉兵拿下",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 65.096,
+    "end": 67.317,
+    "text": "他们说　去城下喊开城门",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 67.536,
+    "end": 69.277,
+    "text": "不死　还有富贵拿",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 70.966,
+    "end": 72.853,
+    "text": "我点了点头　说好",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 74.217,
+    "end": 77.461,
+    "text": "他们押着我　一步一步往城下",
+    "chorus": false,
+    "tag": "Verse 2"
+   },
+   {
+    "start": 78.487,
+    "end": 83.953,
+    "text": "我站在城墙底下　抬起头",
+    "chorus": false,
+    "tag": "Pre-Chorus"
+   },
+   {
+    "start": 84.536,
+    "end": 87.049,
+    "text": "城上的人　守住啊",
+    "chorus": true,
+    "tag": "Chorus"
+   },
+   {
+    "start": 87.728,
+    "end": 90.323,
+    "text": "救兵就要到　救兵就要到",
+    "chorus": true,
+    "tag": "Chorus"
+   },
+   {
+    "start": 91.801,
+    "end": 95.395,
+    "text": "守住啊　救兵就要到",
+    "chorus": true,
+    "tag": "Chorus"
+   },
+   {
+    "start": 110.338,
+    "end": 113.653,
+    "text": "我喊我是张大舍　已经见过主上",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 113.967,
+    "end": 117.044,
+    "text": "城上的人听见了　守得更牢",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 117.223,
+    "end": 119.919,
+    "text": "身后的长槊　一起落下来",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 120.304,
+    "end": 122.927,
+    "text": "我的话　已经送到",
+    "chorus": false,
+    "tag": "Verse 3"
+   },
+   {
+    "start": 123.969,
+    "end": 126.977,
+    "text": "后来南昌城里　立了一座庙",
+    "chorus": false,
+    "tag": "Bridge"
+   },
+   {
+    "start": 127.335,
+    "end": 129.478,
+    "text": "十四尊像　我排在第八",
+    "chorus": false,
+    "tag": "Bridge"
+   },
+   {
+    "start": 129.934,
+    "end": 133.894,
+    "text": "又追封了我一个侯　叫忠节",
+    "chorus": false,
+    "tag": "Bridge"
+   },
+   {
+    "start": 137.435,
+    "end": 139.769,
+    "text": "守住了　守了八十五天",
+    "chorus": true,
+    "tag": "Final Chorus"
+   },
+   {
+    "start": 140.294,
+    "end": 142.682,
+    "text": "七月救兵到了　我没有看到",
+    "chorus": true,
+    "tag": "Final Chorus"
+   },
+   {
+    "start": 143.413,
+    "end": 148.919,
+    "text": "我喊过的那一句　救兵就要到",
+    "chorus": true,
+    "tag": "Final Chorus"
+   }
+  ],
+  "sections": [
+   {
+    "tag": "Intro",
+    "label": "前奏",
+    "chorus": false,
+    "start": 0,
+    "i": 1,
+    "end": 0.4,
+    "lines": []
+   },
+   {
+    "tag": "Intro",
+    "label": "前奏",
+    "chorus": false,
+    "start": 0.4,
+    "i": 2,
+    "end": 12.186,
+    "lines": []
+   },
+   {
+    "tag": "Verse 1",
+    "label": "主歌1",
+    "chorus": false,
+    "start": 12.186,
+    "i": 3,
+    "end": 37.679,
+    "lines": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   },
+   {
+    "tag": "Pre-Chorus",
+    "label": "导歌",
+    "chorus": false,
+    "start": 37.679,
+    "i": 4,
+    "end": 45.752,
+    "lines": [
+     9,
+     10
+    ]
+   },
+   {
+    "tag": "Chorus",
+    "label": "副歌",
+    "chorus": true,
+    "start": 45.752,
+    "i": 5,
+    "end": 59.411,
+    "lines": [
+     11,
+     12,
+     13
+    ]
+   },
+   {
+    "tag": "Verse 2",
+    "label": "主歌2",
+    "chorus": false,
+    "start": 59.411,
+    "i": 6,
+    "end": 78.487,
+    "lines": [
+     14,
+     15,
+     16,
+     17,
+     18,
+     19
+    ]
+   },
+   {
+    "tag": "Pre-Chorus",
+    "label": "导歌",
+    "chorus": false,
+    "start": 78.487,
+    "i": 7,
+    "end": 84.536,
+    "lines": [
+     20
+    ]
+   },
+   {
+    "tag": "Chorus",
+    "label": "副歌",
+    "chorus": true,
+    "start": 84.536,
+    "i": 8,
+    "end": 95.895,
+    "lines": [
+     21,
+     22,
+     23
+    ]
+   },
+   {
+    "tag": "Instrumental",
+    "label": "间奏",
+    "chorus": false,
+    "start": 95.895,
+    "i": 9,
+    "end": 110.338,
+    "lines": []
+   },
+   {
+    "tag": "Verse 3",
+    "label": "主歌3",
+    "chorus": false,
+    "start": 110.338,
+    "i": 10,
+    "end": 123.969,
+    "lines": [
+     24,
+     25,
+     26,
+     27
+    ]
+   },
+   {
+    "tag": "Bridge",
+    "label": "桥段",
+    "chorus": false,
+    "start": 123.969,
+    "i": 11,
+    "end": 137.435,
+    "lines": [
+     28,
+     29,
+     30
+    ]
+   },
+   {
+    "tag": "Final Chorus",
+    "label": "最后的副歌",
+    "chorus": true,
+    "start": 137.435,
+    "i": 12,
+    "end": 149.319,
+    "lines": [
+     31,
+     32,
+     33
+    ]
+   },
+   {
+    "tag": "Outro",
+    "label": "尾奏",
+    "chorus": false,
+    "start": 149.319,
+    "i": 13,
+    "end": 176,
+    "lines": []
+   }
+  ],
+  "topics": [
+   {
+    "t": 0,
+    "text": "四月，船停满了江"
+   },
+   {
+    "t": 11.886,
+    "text": "一个千户出了城"
+   },
+   {
+    "t": 37.379000000000005,
+    "text": "坚守一个月"
+   },
+   {
+    "t": 45.502,
+    "text": "守住啊"
+   },
+   {
+    "t": 59.111000000000004,
+    "text": "回来的路上"
+   },
+   {
+    "t": 78.187,
+    "text": "城下"
+   },
+   {
+    "t": 84.286,
+    "text": "守住啊"
+   },
+   {
+    "t": 95.895,
+    "text": "城里的八十五天"
+   },
+   {
+    "t": 110.038,
+    "text": "他喊的是这一句"
+   },
+   {
+    "t": 123.669,
+    "text": "后来"
+   },
+   {
+    "t": 137.185,
+    "text": "守住了"
+   },
+   {
+    "t": 149.31900000000002,
+    "text": "守了八十五天"
+   },
+   {
+    "t": 172.8,
+    "text": "头功给谁"
+   }
+  ]
+ }
+}

@@ -21,17 +21,21 @@
 <div id="film" data-composition-id="film" data-width="1080" data-height="1440" data-fps="30"><canvas id="stage" width="1080" height="1440"></canvas></div>
 <script>
 const COVER = {
-  label: '大明开局 · 第10集',          // 左上角红签
-  hook: ['一封劝谏', '江水在涨'],       // 两行大字，每行 ≤ 7 字；第二行印朱色
-  song: '《江水在涨》',                 // 歌名
-  foot: '第拾章 · 1363',               // 原书章节 / 年份
+  label: '大明开局 · 第11集',          // 左上角红签
+  hook: ['他被押到城下', '救兵就要到'], // 两行大字，每行 ≤ 7 字；第二行印朱色
+  song: '《救兵就要到》',               // 歌名
+  foot: '第十一章 · 1363',             // 原书章节 / 年份
 };
-// 主视觉：一个最有分量的意象（在 y 760–1300 之间画）
+// 主视觉：一面城墙、墙头一排守兵，墙下一个仰头的人
 function hero(o) {
-  BH.sky(o, 700, 1060, 7); BH.sun(o, 820, 860, 110);
-  BH.mount(o, -60, 1140, 1080, 220, 5, 0.6);
-  BH.waves(o, 1060, 1320, 44, 3, 0.35, 1.2);
-  BH.tower(o, 560, 1150, 0.82);
+  BH.sky(o, 700, 1320, 7);
+  o.ink.lineWidth = 0;
+  const wall = new Path2D(); wall.rect(0, 860, 1080, 460); o.knock(wall); o.blueT.fillStyle = BH.tone(0.3); o.blueT.fill(wall);
+  o.ink.lineWidth = 6; o.ink.strokeRect(-10, 860, 1100, 470); o.ink.lineWidth = 1.6;
+  for (let y = 890, r = 0; y < 1320; y += 30, r++) { o.ink.beginPath(); o.ink.moveTo(0, y); o.ink.lineTo(1080, y); o.ink.stroke(); for (let x = (r % 2) * 45; x < 1080; x += 90) { o.ink.beginPath(); o.ink.moveTo(x, y); o.ink.lineTo(x, y + 30); o.ink.stroke(); } }
+  for (let x = 0; x < 1080; x += 58) { o.ink.fillRect(x, 830, 36, 30); o.knockRect(x, 830, 36, 30); }
+  for (let x = 40; x < 1060; x += 90) BH.sentry(o, x, 830, 0.36);
+  BH.profile(o, 640, 1320, 1.0, { flip: true });
 }
 const F = BH.film({ cover: true });
 F.shot('cover', 0, (sh) => {
