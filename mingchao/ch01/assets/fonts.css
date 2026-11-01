@@ -1,0 +1,5 @@
+/* 字体：setup.sh 调 scripts/fonts.py 从官方源下载并做 GB2312 子集（SIL OFL 1.1，缓存在 ~/.cache/ming-fonts），new_chapter.sh 拷进 <章节>/assets/fonts/ */
+@font-face { font-family: "LXGW WenKai"; src: url("fonts/LXGWWenKai-500.woff") format("woff"); font-weight: 500; font-style: normal; }
+@font-face { font-family: "Noto Sans SC"; src: url("fonts/NotoSansSC-500.woff") format("woff"); font-weight: 400 500; font-style: normal; }
+@font-face { font-family: "Noto Sans SC"; src: url("fonts/NotoSansSC-700.woff") format("woff"); font-weight: 600 700; font-style: normal; }
+@font-face { font-family: "Noto Sans SC"; src: url("fonts/NotoSansSC-900.woff") format("woff"); font-weight: 800 900; font-style: normal; }

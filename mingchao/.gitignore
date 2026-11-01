@@ -1,0 +1,7 @@
+# 原书正文（版权）、中间文件、大文件不入库
+*-source.txt
+**/.cache/
+**/out/*.mp4
+**/out/render.log
+**/assets/*.wav
+**/assets/fonts/

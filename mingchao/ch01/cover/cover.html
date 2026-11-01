@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>封面 · 大明开局（雾山画风）</title>
+<style>
+@font-face { font-family: "Noto Sans SC"; src: url("../assets/fonts/NotoSansSC-500.woff") format("woff"); font-weight: 500; }
+@font-face { font-family: "Noto Sans SC"; src: url("../assets/fonts/NotoSansSC-700.woff") format("woff"); font-weight: 700; }
+@font-face { font-family: "Noto Sans SC"; src: url("../assets/fonts/NotoSansSC-900.woff") format("woff"); font-weight: 900; }
+@font-face { font-family: "LXGW WenKai"; src: url("../assets/fonts/LXGWWenKai-500.woff") format("woff"); font-weight: 500; }
+</style>
+<link rel="stylesheet" href="../assets/ming.css">
+<link rel="stylesheet" href="../assets/wushan.css">
+<style>
+  #film { width: 1080px; height: 1440px; background: #05080f; }
+  #bg, #sv { position: absolute; left: 0; top: 0; }
+  #vig { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 48%, rgba(0,0,0,.6) 100%); }
+  #sign { top: 72px; right: 60px; font-size: 38px; z-index: 3; }
+</style>
+<script src="../vendor/gsap.min.js"></script>
+<script src="../vendor/mr.js"></script>
+<script src="../assets/ming.js"></script>
+<script src="../assets/wushan.js"></script>
+<script src="../assets/rig.js"></script>
+</head>
+<body>
+<!-- 封面（雾山画风）：3:4，1080×1440。改章节只改 COVER 里的字、天色和主角造型/动作。
+     版式：左上系列名·集数；右上署名（#sign）；上方两行钩子大字；中间主角（骨骼角色）+ 月/日 + 山雾；底部深色带写集数和标题 -->
+<div id="film" data-composition-id="cover" data-width="1080" data-height="1440">
+  <canvas id="bg" width="1080" height="1440"></canvas>
+  <svg id="sv" width="1080" height="1440" style="overflow:visible"></svg>
+  <div id="vig"></div>
+  <div id="stage" class="fill"></div>
+  <div id="sign">@张景行</div>
+</div>
+<script>
+(() => {
+  // hook 两行：第二行里用 <b> 标出关键词（朱砂红）；sky：night（月夜）或 dawn（晨光）
+  const COVER = { series: '大明开局', ep: '01', hook: ['他叫重八', '后来坐上<b>龙椅</b>'], title: '童年', year: '1328 · 濠州钟离', sky: 'night',
+    hero: { look: 'civilian', pose: 'stand', horse: false } };
+  const W = Wushan, M = Ming, st = document.getElementById('stage'), g = document.getElementById('bg').getContext('2d');
+  const night = COVER.sky !== 'dawn';
+  W.sky(g, 1080, 1440, night ? '#03070f' : '#3a2140', night ? '#10243a' : '#c4512f', night ? '#2a4152' : '#f7c46c', 0.62);
+  if (night) W.stars(g, 1080, 1440, 0.5, 3, 120, 0.9);
+  W.orb(g, 760, 560, 150, night ? '#f3f0df' : '#e8452a', night ? 'rgba(150,200,255,.35)' : 'rgba(255,120,60,.45)', 520);
+  W.range(g, 1080, 1440, { f: W.fbm(1), y: 900, amp: 300, top: night ? '#1d3446' : '#6a2a2c', bot: night ? '#2a4a57' : '#a8503a' });
+  W.mist(g, 1080, 2, { y: 900, h: 90, alpha: 0.4, color: night ? 'rgba(170,205,220,.55)' : 'rgba(255,200,160,.55)', seed: 4, speed: 16 });
+  W.range(g, 1080, 1440, { f: W.fbm(2), y: 1060, amp: 160, top: night ? '#0e1a26' : '#3b1d24', bot: night ? '#182c3a' : '#6a3530', scale: 0.006 });
+  g.fillStyle = '#04060a'; g.fillRect(0, 1180, 1080, 260);
+  // 主角
+  const sv = document.getElementById('sv'), L = night ? W.LIGHT.moon : W.LIGHT.dawn, h = COVER.hero;
+  if (h.horse) {
+    const horse = Rig.horse(sv, { ground: 160 }), pg = Rig.gallop(0.1);
+    horse.set({ x: 560, y: 1180 - 250 + pg.bob, groundY: 1182, s: 1.45, angles: pg.angles }, L);
+    const rider = Rig.human(sv, { look: Rig.LOOK[h.look] }), pr = Rig[h.pose](0.1);
+    rider.set({ x: horse.world.saddle.e, y: horse.world.saddle.f - 12, s: 1.4, angles: pr.angles, worldAngles: pr.worldAngles }, L);
+  } else {
+    const r = Rig.human(sv, { look: Rig.LOOK[h.look], ground: 70 }), pp = Rig[h.pose](0.1);
+    r.set({ x: 560, y: 1180 - 172 * 1.8, groundY: 1182, s: 1.8, angles: pp.angles, worldAngles: pp.worldAngles }, L);
+  }
+  // 文字
+  M.box(st, 'kai', 60, 60, `${COVER.series} · ${COVER.ep}`, { padding: '10px 26px 12px', background: 'linear-gradient(180deg,#ef5a35,#b8301c)', color: '#f6efe0', fontSize: '42px', borderRadius: '10px', letterSpacing: '2px', zIndex: 3 });
+  COVER.hook.forEach((t, i) => M.box(st, 'ws-title', 60, 170 + i * 150, t.replace(/<b>/g, '<span style="color:#ff5a2a">').replace(/<\/b>/g, '</span>'), { fontSize: '128px', lineHeight: 1.1, letterSpacing: '4px', zIndex: 3 }));
+  M.box(st, 'ws-label', 64, 1172, COVER.year, { fontSize: '52px', color: '#f2b84b', zIndex: 3 });
+  M.box(st, '', 0, 1250, '', { w: 1080, h: 190, background: 'rgba(6,8,12,.92)', zIndex: 3 });
+  M.box(st, 'kai', 60, 1290, `第${COVER.ep.replace(/^0/, '')}集 · ${COVER.title}`, { fontSize: '72px', color: '#f6efe0', letterSpacing: '6px', whiteSpace: 'nowrap', zIndex: 3 });
+  (window.__timelines = window.__timelines || {}).cover = gsap.timeline({ paused: true }).to({}, { duration: 1 });
+})();
+</script>
+</body>
+</html>
