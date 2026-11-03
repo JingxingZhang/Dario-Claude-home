@@ -89,3 +89,32 @@ Keep the exact hand-drawn 2D style, line work, colors and character design of th
 - 首帧图：`stills/S01.png` … `stills/S13.png`
 - 视频：`clips/S01.mp4` …；多条候选用 `S05_t1.mp4`、`S05_t2.mp4`，我来挑。
 - 配乐：从 Suno 下载你选的那版 mp3，命名 `music/score.mp3`。
+
+---
+
+## 5. 精简版首帧提示词（定妆图已定，配合 REF_A + REF_B 两张参考图使用）
+
+> 定妆图用 ChatGPT Images 2.5 生成，保存在 `stills/REF_A.png`、`stills/REF_B.png`。13 张首帧建议**用同一个工具**出，每次都附上这两张图。
+> 调整：气球改蓝色、风筝改黄蓝色，避免和红围巾抢颜色；背景要求比 REF_B 更简洁、更雾、更灰，让人物跳出来。
+
+每条末尾都拼上 **TAIL**：
+```
+Use the first attached image as the exact character design (face, copper bob with bangs, freckles, charcoal-grey coat, very long chunky red knitted scarf with fringe, black tights, brown lace-up boots, paper bag with baguette under her right arm) and the second attached image for the watercolor painting style and town. Keep the background simpler, hazier and more muted than the reference so she stands out; the red scarf is the boldest color in the frame. 2D hand-drawn storybook animation frame, 16:9, no text.
+```
+
+| # | 首帧提示词（+ TAIL） |
+|---|---|
+| S01 | Wide side-view shot: she walks from left to right along a steep cobbled street of the seaside town, her very long red scarf streaming horizontally behind her in strong wind, a few leaves blowing. |
+| S02 | Medium side shot on the windy street: a small boy in a yellow raincoat has just let go of a sky-blue balloon, its string floating just above his reaching hand; she walks past right behind him, the end of her scarf trailing near the string. |
+| S03 | Medium side shot: an old man with a white mustache sitting on a bench, newspaper pages bursting out of his hands and flying in the wind; she enters from the left, deadpan. |
+| S04 | Side shot: a window cleaner on a tall wooden ladder leaning against a pastel house, the ladder starting to tip away from the wall, his bucket swinging; she walks past an iron lamppost at the foot of the ladder. |
+| S05 | Low angle under an autumn tree: a small bird's nest with three blue eggs tumbling off a branch, a mother bird flapping in alarm; she walks underneath, looking straight ahead. |
+| S06 | Side shot outside a small café with a striped awning: a waiter in a white apron mid-stumble on the cobbles, teacups starting to slide off his tilted tray; she is passing by. |
+| S07 | Small hilltop park: a yellow-and-blue diamond kite tangled high in a bare tree, a little girl in a green coat pointing up at it, about to cry; she stands below looking up deadpan, unwinding the red scarf from her neck. |
+| S08 | Same park, wider: the freed kite soaring up into the grey sky with her red scarf tied to it like a long kite tail, the scarf end just slipping out of her fingers; she stands below with a bare neck; the girl cheers. |
+| S09 | Side-view shot: she walks from left to right with NO scarf, bare neck, coat collar turned up; the wind has stopped, the last leaves falling straight down; colder, bluer light. |
+| S10 | Extreme close-up of her face in profile, nose and half-lidded eye, against a pale cold sky, no scarf, a single tiny snowflake drifting just above the tip of her nose. |
+| S11 | Close-up of her face, front view, deadpan, bare neck, coat collar up, a few snowflakes falling around her, cold blue-grey light. |
+| S12 首帧 | Medium-wide shot in light snowfall: she stands still on the cobbled street with no scarf, looking up; high above, the long red scarf drifts down out of the sky like a ribbon; far in the background the girl in the green coat holds the kite and waves. |
+| S12 尾帧 | **在 S12 首帧上做图片编辑**：Edit this image: the red scarf is now wrapped once around her neck with both ends hanging down, she has a tiny content smile; keep everything else identical. |
+| S13 | Back view, wide shot: she walks away up the snowy cobbled street, the red scarf trailing behind her, snow falling, warm light glowing in the windows. |
