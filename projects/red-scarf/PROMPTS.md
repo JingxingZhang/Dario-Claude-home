@@ -198,3 +198,5 @@ Static medium-wide shot. 0–2.5s: the red scarf flutters down out of the snowy 
 ```
 Static wide shot from behind. She walks slowly away up the snowy cobbled street, the red scarf swaying gently behind her, snow falling, lamplight and windows glowing warmly. Calm and slow; she grows smaller in the distance. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: footsteps crunching in light snow, quiet ambience; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks.
 ```
+
+> **S02 补跑版（v3）**：第 1 条里气球自己飘回来了，围巾没有碰到绳子。补跑用网页上的新提示词：气球全程留在画面内，围巾末端明确缠住绳子往下拉，再放进男孩手里。
