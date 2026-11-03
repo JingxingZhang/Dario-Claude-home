@@ -118,3 +118,12 @@ Use the first attached image as the exact character design (face, copper bob wit
 | S12 首帧 | Medium-wide shot in light snowfall: she stands still on the cobbled street with no scarf, looking up; high above, the long red scarf drifts down out of the sky like a ribbon; far in the background the girl in the green coat holds the kite and waves. |
 | S12 尾帧 | **在 S12 首帧上做图片编辑**：Edit this image: the red scarf is now wrapped once around her neck with both ends hanging down, she has a tiny content smile; keep everything else identical. |
 | S13 | Back view, wide shot: she walks away up the snowy cobbled street, the red scarf trailing behind her, snow falling, warm light glowing in the windows. |
+
+---
+
+## 6. Veo 3.1 动作提示词（最终版，已拼好结尾；无配乐，音频全靠 Veo 原生音效）
+
+TAIL（已拼入下方各条）：
+`Keep the exact hand-drawn 2D style, line work, colors and character design of the input image. Fluid traditional 2D character animation with snappy comedic timing, smear frames on fast moves. Static camera unless stated. Audio: subtle natural ambience matching the scene and one light foley sound for the action, no music, no dialogue.`
+
+改动：S02 气球改 sky-blue，S07/S08 风筝改 yellow-and-blue；S12 用首尾帧模式。
