@@ -127,3 +127,74 @@ TAIL（已拼入下方各条）：
 `Keep the exact hand-drawn 2D style, line work, colors and character design of the input image. Fluid traditional 2D character animation with snappy comedic timing, smear frames on fast moves. Static camera unless stated. Audio: subtle natural ambience matching the scene and one light foley sound for the action, no music, no dialogue.`
 
 改动：S02 气球改 sky-blue，S07/S08 风筝改 yellow-and-blue；S12 用首尾帧模式。
+
+---
+
+## 7. Veo 3.1 动作提示词 v2（负面提示词已整合进每条，可直接整段复制）
+
+参数：Image-to-Video，16:9，1080p，4s；S12 用首尾帧。
+
+**S01 开场**（已完成） · 用 0.00–2.48s · 首帧
+```
+Slow side-tracking shot following her. She strolls left to right up the cobbled street with long, lazy strides, deadpan and half-asleep, the baguette bag under her arm. Her long red scarf ripples and snakes behind her in the strong wind; autumn leaves swirl past and seagulls glide over the harbor. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: gusty wind, footsteps on cobblestones, distant gulls; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks.
+```
+
+**S02 气球** · 用 2.48–4.67s · 首帧
+```
+Static side shot. 0–1s: the blue balloon string slips upward past the boy's reaching fingers. 1–2s: without looking, she gives a tiny flick of her head; the end of her red scarf whips up, curls around the balloon string like a hand and lowers it straight into the boy's palm. 2–4s: the boy blinks, clutching the string, as she keeps walking out of frame to the right, still deadpan. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: wind, a soft whoosh of wool, a small rubbery squeak of the balloon; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, the balloon popping or changing color.
+```
+
+**S03 报纸** · 用 4.67–6.85s · 首帧
+```
+Static side shot. 0–1s: newspaper pages tear out of the old man's hands and flutter toward her. 1–2.5s: her red scarf sweeps through the air in one smooth arc, scoops every page into a neat folded stack and drops it onto his lap. 2.5–4s: he stares, mouth open, as she walks on without breaking stride, deadpan. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: flapping paper, a soft whoosh, a light paper thump; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, readable newsprint.
+```
+
+**S04 梯子** · 用 6.85–9.03s · 首帧
+```
+Static side shot. 0–1s: the ladder tips further away from the wall, the window cleaner flailing, his bucket swinging. 1–2.5s: her red scarf lashes out, loops around the ladder and the iron lamppost and snaps taut, pulling the ladder back upright against the wall. 2.5–4s: clinging on, the window cleaner gives a shaky thumbs up while she keeps walking, deadpan. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: a wooden creak, a whoosh, a taut woolly snap, a bucket clank; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, the ladder breaking or bending.
+```
+
+**S05 鸟蛋** · 用 9.03–11.21s · 首帧
+```
+Low-angle static shot. 0–1s: the two blue eggs drop from the nest as the mother bird squawks. 1–2.5s: the end of her red scarf swings up beneath them like a soft hammock, catches both eggs and gently tosses them back up into the nest. 2.5–4s: the mother bird settles onto the nest, relieved, while she walks on, deadpan. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: an alarmed chirp, a soft woolly whoosh, two tiny taps; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, eggs breaking, extra eggs or extra birds.
+```
+
+**S06 茶杯** · 用 11.21–13.40s · 首帧
+```
+Static side shot. 0–1s: the teapot and teacups fly off the waiter's tilted tray. 1–2.5s: her red scarf slides out flat beneath them like a second tray, catches the teapot and every cup without spilling a drop, and tips them neatly back onto his tray. 2.5–4s: the waiter freezes mid-stumble on one leg, stunned, as she walks on, deadpan. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: clinking china, a whoosh, a gentle porcelain clink; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, broken china, spilled tea.
+```
+
+**S07 套风筝** · 用 13.40–15.58s · 首帧
+```
+Static shot. 0–1s: she pulls the long red scarf off her neck. 1–2.5s: she twirls it once over her head like a lasso and flings it up into the tree; the scarf end hooks the tangled yellow-and-blue kite and yanks it free. 2.5–4s: the kite flutters loose above the branches; the little girl gasps with hope. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: a whoosh, rustling branches, a snap of kite fabric; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, the kite tearing.
+```
+
+**S08 围巾飞走** · 用 15.58–17.76s · 首帧
+```
+Static wide shot. 0–1.5s: a strong gust yanks the kite upward; the red scarf, knotted under the kite like a long tail, slips out of her fingertips. 1.5–4s: kite and scarf soar away into the grey sky, getting smaller; she watches with her arm still raised, blinking slowly, bare-necked; the little girl jumps and cheers. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: a big gust of wind, flapping fabric, a child's wordless happy shout; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, a scarf appearing on her neck.
+```
+
+**S09 风停了** · 用 17.76–19.94s · 首帧
+```
+Slow side-tracking shot following her. She walks left to right, calm and deadpan, bare neck, coat collar turned up. The wind gradually dies: her hair settles and the last leaves float straight down and come to rest on the cobbles. Everything becomes still and quiet. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: wind fading to near silence, soft footsteps; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, any scarf on her neck.
+```
+
+**S10 雪花落鼻尖** · 用 19.94–22.12s · 首帧
+```
+Static extreme close-up in profile. A single snowflake drifts down slowly and lands on the tip of her nose. Her eye slowly shifts to look at it and her lips close; otherwise she stays perfectly still and deadpan. Very slow, gentle motion. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: near silence, the faintest soft tick as the snowflake lands; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, any scarf on her neck, more than one snowflake on her nose.
+```
+
+**S11 发抖** · 用 22.12–24.30s · 首帧
+```
+Static close-up, front view. She gives one tiny full-body shiver, deadpan, sinks her chin into her turned-up coat collar and exhales a small puff of white breath. Snowflakes drift down. Subtle and comedic. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: quiet winter ambience, a small shivering exhale; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks, any scarf on her neck, exaggerated facial expressions.
+```
+
+**S12 围巾回来了** · 用 24.30–27.58s · 首尾帧
+```
+Static medium-wide shot. 0–2.5s: the red scarf flutters down out of the snowy sky in slow, looping S-curves and wraps itself neatly around her neck, its ends falling into place. 2.5–4s: she gives a tiny, satisfied smile; far in the background the little girl flies her kite and waves. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: soft snowfall ambience, a gentle whoosh of wool; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks.
+```
+
+**S13 背影** · 用 27.58–30.00s · 首帧
+```
+Static wide shot from behind. She walks slowly away up the snowy cobbled street, the red scarf swaying gently behind her, snow falling, lamplight and windows glowing warmly. Calm and slow; she grows smaller in the distance. Keep the exact hand-drawn 2D storybook look of the input frame: same ink line work, watercolor textures, colors and character design. Fluid traditional 2D animation with snappy comedic timing and smear frames on fast moves. Audio: footsteps crunching in light snow, quiet ambience; no music, no dialogue. Avoid: 3D render, CGI, photorealism, glossy shading, anime-style redraw, morphing or warping faces, extra limbs or fingers, a second scarf, the scarf changing color, length or texture, sudden style changes, camera shake, readable text, letters, signs or logos, subtitles, watermarks.
+```
