@@ -1,0 +1,4 @@
+out/*.mp4
+out/render.log
+tools/mono.raw
+src/__pycache__/
