@@ -4,12 +4,12 @@
   "width": 1920,
   "height": 1080,
   "music": {
-    "file": "music/score.mp3",
+    "file": "",
     "offset": 0.0,
     "gain_db": -1.0,
     "fade_out": 1.4
   },
-  "clip_audio_db": -16,
+  "clip_audio_db": 0,
   "grade": {
     "grain": 5,
     "vignette": 0.25,
