@@ -18,7 +18,7 @@ dur = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=d
 pj = dict(title=A.title, artist=A.artist, signature=A.signature, tag=A.tag, duration=round(dur, 3),
           title_end=9.6, end_start=round(dur - 10, 1), audio=os.path.abspath(A.audio))
 json.dump(pj, open(os.path.join(d, 'project.json'), 'w'), ensure_ascii=False, indent=2)
-for src, dst in (('mv_template.py', 'mv.py'), ('分镜说明模板.md', '分镜说明.md')):
+for src, dst in (('mv_template.py', 'mv.py'), ('storyboard_template.md', '分镜说明.md')):
     if not os.path.exists(os.path.join(d, dst)):
         shutil.copy(os.path.join(SKILL, 'templates', src), os.path.join(d, dst))
 open(os.path.join(d, '.gitignore'), 'w').write('out/*.mp4\ntools/*.raw\n__pycache__/\n')

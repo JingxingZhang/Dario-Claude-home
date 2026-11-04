@@ -139,7 +139,7 @@ description: 根据一首歌的曲风和歌词，量身定制一支像素风 MV�
   - `huazi`：花字；
   - `engine`：镜头表、歌词、片头片尾、回放、署名；
   - `sticker`：表情包。
-- `templates/`：`mv_template.py`（只有骨架，没有默认角色）、`分镜说明模板.md`、`sticker_template.py`。
+- `templates/`：`mv_template.py`（只有骨架，没有默认角色）、`storyboard_template.md`（分镜说明模板）、`sticker_template.py`。
 - `references/`：
   - `visual-design.md`：曲风 → 视觉，必读；
   - `storyboard-guide.md`：逐句分镜，必读；
