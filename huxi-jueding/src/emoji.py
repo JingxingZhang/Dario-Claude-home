@@ -94,5 +94,8 @@ if __name__ == '__main__':
     frames = [frame(i / 10, 480).convert('P', palette=Image.ADAPTIVE, colors=128) for i in range(int(LOOP * 10))]
     frames[0].save(os.path.join(OUT, '关注领原视频.gif'), save_all=True, append_images=frames[1:], duration=100, loop=0, optimize=True, disposal=2)
     frame(1.6).save(os.path.join(OUT, '关注领原视频-已关注.png'))
+    # 小号动图：360×360、12 帧（每帧 0.2 秒）、64 色，给评论区用
+    small = [frame(i / 5, 360).convert('P', palette=Image.ADAPTIVE, colors=64) for i in range(int(LOOP * 5))]
+    small[0].save(os.path.join(OUT, '关注领原视频-小.gif'), save_all=True, append_images=small[1:], duration=200, loop=0, optimize=True, disposal=2)
     for f in os.listdir(OUT):
         print(f, os.path.getsize(os.path.join(OUT, f)) // 1024, 'KB')
