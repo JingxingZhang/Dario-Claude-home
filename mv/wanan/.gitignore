@@ -1,0 +1,5 @@
+out/*.mp4
+tools/*.raw
+__pycache__/
+__pycache__/
+tools/ocr/*.png
