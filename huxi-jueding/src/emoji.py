@@ -84,7 +84,7 @@ TEXT = Z.Line(-5, 99, '关注我/原视频送你', pal='yel', kw=['原视频'], 
 def frame(t, size=1080):
     base = pixel_layer(t).resize((N * S, N * S), Image.NEAREST)
     TEXT.draw(base, 10.0 + (t % LOOP), beat_phase=(t % 0.6))
-    Z.pill(base, 540, 1018, '关注后私信发你 · @张景行', 50, bg=(60, 20, 70), edge=(255, 255, 255))
+    Z.pill(base, 540, 1018, '关注后私信发你', 50, bg=(60, 20, 70), edge=(255, 255, 255))
     return base if size == 1080 else base.resize((size, size), Image.LANCZOS)
 
 
