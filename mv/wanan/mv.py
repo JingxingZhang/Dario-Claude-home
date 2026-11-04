@@ -855,10 +855,22 @@ def s_drop(img, t, lt, v):
 
 
 def s_flustered(img, t, lt, v):
-    """声色太慌张你眼神逃避"""
-    street(img, t, v, 132, seed=41)
-    on = not (int(t * 7) % 4 == 0 or (lt > 1.5 and int(t * 11) % 3 == 0))
-    neon(img, 128, 8, '声色', (255, 110, 190) if v is not True else (150, 210, 230), on)
+    """声色太慌张你眼神逃避：声＝发抖的声音，色＝泛红的脸色（不是声色场所）"""
+    street(img, t, v, 132, seed=41, lamp_x=148)
+    d = ImageDraw.Draw(img)
+    # 她开口：气泡里的声波乱抖
+    if lt > 0.3:
+        bx, by, bw, bh = 176, 12, 72, 22
+        R(d, bx - 1, by - 1, bw + 2, bh + 2, INK_C); R(d, bx, by, bw, bh, (250, 248, 240))
+        d.polygon([(bx + 8, by + bh), (bx + 14, by + bh), (bx + 6, by + bh + 6)], fill=(250, 248, 240), outline=INK_C)
+        R(d, bx + 7, by + bh - 1, 7, 2, (250, 248, 240))
+        pts = []
+        for i in range(bw - 8):
+            amp = 3 + 5 * abs(math.sin(i * 0.31 + t * 9)) * (0.6 + 0.4 * math.sin(t * 23 + i))
+            pts.append((bx + 4 + i, by + bh // 2 + math.sin(i * 1.3 + t * 30) * amp * 0.9))
+        for a_, b_ in zip(pts, pts[1:]):
+            d.line([a_, b_], fill=(210, 70, 120), width=1)
+        draw_text(img, bx + bw + 6, by + 5, '声音发抖', (255, 200, 220), outline=INK_C)
     dart = int(lt * 2.5) % 2
     lead(img, 116, 132, 'wave' if int(lt * 3) % 2 else 'idle', 'blush' if lt > 1.2 else 'shock', 1, 2)
     you(img, 204, 132, 'idle', 'side' if dart else 'awk', -1 if dart else 1, 2)
@@ -866,12 +878,15 @@ def s_flustered(img, t, lt, v):
     ax = 178 if dart else 230
     draw_text(img, ax, 54, '←' if dart else '→', (255, 230, 120), outline=INK_C)
     sweat(img, 220, 66, 1)
+    # 两个人都脸红（色）
+    for hx in (112, 200):
+        R(d, hx - 9, 76, 3, 1, (255, 120, 150)); R(d, hx + 7, 76, 3, 1, (255, 120, 150))
     # 头顶冒蒸汽
     for i, hx in enumerate((116, 204)):
         ph = (t * 1.2 + i * 0.5) % 1
         disc(ImageDraw.Draw(img), hx + int(math.sin(ph * 6) * 3), 58 - int(ph * 16), 2 + int(ph * 2), (240, 240, 250))
     if lt > 0.8:
-        sys_msg(img, 160, 44, '目光闪躲中…', (180, 70, 130))
+        sys_msg(img, 116, 40, '目光闪躲中…', (180, 70, 130))
 
 
 def s_charmed(img, t, lt, v):
@@ -962,13 +977,28 @@ def s_tug(img, t, lt, v):
     d.line([(lx + 14, hy), (kx, hy + 2), (yx - 14, hy)], fill=(240, 220, 180), width=2)
     heart_glow(img, kx, hy, 2, (255, 110, 150) if v is not True else (170, 200, 220))
     n = 1 + int(98 * ease(seg(lt, 0.3, 3.4)))
-    cal_page(img, 8, 10, f'第{n}夜')
+    cal_page(img, 12, 14, f'第{n}夜')
     hh = 3 + int(lt * 0.3)
     s = f'聊天时长 0{hh}:{int(12 + lt * 7) % 60:02d}:{int(lt * 37) % 60:02d}'
-    draw_text(img, 196, 12, s, CREAM, outline=INK_C)
+    draw_text(img, 190, 9, s, CREAM, outline=INK_C)
     moonc(img, 164, 36, 'happy', 2, v)
     if lt > 0.3:
         sfx(img, 164, 62, '哔——', t, t - lt + 0.3, 1.2, 'white', 1)
+    memory_frame(img, k=ease(seg(lt, 0.0, 0.6)))
+
+
+def memory_frame(img, k=1.0):
+    """“曾经”：暖褪色 + 相片白边 + 「回忆」标签"""
+    if k <= 0:
+        return
+    tint_img(img, (236, 196, 150), 0.2 * k)
+    d = ImageDraw.Draw(img)
+    b = int(round(5 * k))
+    col = (246, 238, 220)
+    R(d, 0, 0, W, b, col); R(d, 0, H - b, W, b, col); R(d, 0, 0, b, H, col); R(d, W - b, 0, b, H, col)
+    if k >= 1:
+        d.rectangle([b, b, W - b - 1, H - b - 1], outline=(150, 120, 90))
+        R(d, 268, 26, 40, 15, (150, 116, 82)); draw_text(img, 276, 27, '回忆', (250, 240, 220))
 
 
 def s_fade(img, t, lt, v):
@@ -1255,6 +1285,15 @@ def maze(img, v, f, t):
     x, y = _along(MAZE_PATH, f)
     R(d, int(x) - 6, int(y) - 4, 13, 9, INK_C); R(d, int(x) - 5, int(y) - 3, 11, 7, (250, 248, 240))
     d.line([(int(x) - 5, int(y) - 3), (int(x), int(y) + 1), (int(x) + 5, int(y) - 3)], fill=(240, 90, 120))
+    # 信封上写的话：想说的“喜欢你”被划掉，绕完迷宫只剩“晚安”
+    lab = '喜欢你' if f < 0.5 else '晚安'
+    lw = text_w(lab)
+    lx = int(clamp(x - lw / 2, 8, 218 - lw)); ly = int(y) - 17 if y > 24 else int(y) + 7
+    R(d, lx - 2, ly - 1, lw + 4, 14, INK_C)
+    draw_text(img, lx, ly, lab, (255, 170, 200) if lab == '喜欢你' else CREAM)
+    if 0.18 < f < 0.5:
+        k = seg(f, 0.18, 0.32)
+        d.line([(lx - 1, ly + 6), (lx - 1 + int((lw + 2) * k), ly + 6)], fill=(255, 60, 80), width=2)
 
 
 def s_maze(img, t, lt, v):
@@ -1318,44 +1357,54 @@ def s_balcony(img, t, lt, v):
         sys_msg(img, 160, 40, '0 条新消息', (110, 110, 130))
 
 
+def _typed(lt, txt, t0, step, hold, back):
+    """t0 起每 step 秒打一个字，hold 时刻开始每 back 秒退格一个字"""
+    if lt < t0:
+        return ''
+    n = min(len(txt), int((lt - t0) / step) + 1)
+    if lt >= hold:
+        n = max(0, len(txt) - int((lt - hold) / back) - 1)
+    return txt[:n]
+
+
 def s_typing(img, t, lt, v):
-    """桥段：打出晚安又删掉，重复三次，最后把手机扣下"""
+    """桥段（迂回）：打“我好像喜欢你”删掉，打“我喜欢你”又删掉，最后发出去的只有一句“晚安”，扣下手机"""
     p = P(v); d = ImageDraw.Draw(img)
     bedroom(img, t, v, 0.7, 'side', bed=False, lamp_on=True, dim=0.3)
-    # 输入循环：每轮 4 秒：0-1.2 打字，1.2-2.4 停，2.4-3.2 退格
-    cyc = lt % 4.4
-    rnd = int(lt // 4.4)
-    full = '晚安'
-    if rnd >= 3:
-        txt = ''
-    elif cyc < 1.2:
-        txt = full[:int(cyc / 0.5) + 1] if cyc > 0.2 else ''
-    elif cyc < 2.6:
-        txt = full
-    elif cyc < 3.4:
-        txt = full[:max(0, 2 - int((cyc - 2.6) / 0.35) - 1)]
+    sent = lt > 11.3
+    if lt < 5.0:
+        txt = _typed(lt, '我好像喜欢你', 0.4, 0.3, 3.3, 0.14)
+    elif lt < 9.4:
+        txt = _typed(lt, '我喜欢你', 5.3, 0.32, 7.8, 0.16)
+    elif not sent:
+        txt = _typed(lt, '晚安', 9.9, 0.4, 99, 1)
     else:
         txt = ''
     flipped = lt > 13.6
+    msgs = [('l', '晚安'), ('r', '晚安'), ('l', '今天好累'), ('r', '早点休息')] + ([('r', '晚安')] if sent else [])
     if not flipped:
-        phone_ui(img, 176, 8, 110, 120, v, [('l', '晚安'), ('r', '晚安'), ('l', '今天好累'), ('r', '早点休息')], t, '她',
-                 input_txt=txt, cursor_on=int(t * 3) % 2 == 0)
-        if rnd < 3 and 2.6 < cyc < 3.4:
-            sfx(img, 300, 110, '删', t, t - cyc + 2.6, 0.8, 'red', 1)
+        phone_ui(img, 176, 8, 110, 120, v, msgs, t, '她', input_txt=txt, cursor_on=int(t * 3) % 2 == 0)
+        for t_del in (3.3, 7.8):
+            if t_del < lt < t_del + 0.9:
+                sfx(img, 300, 110, '删', t, t - lt + t_del, 0.9, 'red', 1)
+        if 11.3 < lt < 12.3:
+            sfx(img, 300, 110, '发送', t, t - lt + 11.3, 1.0, 'yel', 1)
     else:
         R(d, 176, 124, 120, 5, (110, 80, 90)); R(d, 182, 129, 4, 3, (90, 64, 74)); R(d, 286, 129, 4, 3, (90, 64, 74))
         R(d, 206, 119, 56, 5, INK_C); R(d, 207, 120, 54, 3, (60, 58, 84))
         if lt < 14.6:
             sfx(img, 232, 96, '扣', t, t - lt + 13.6, 1.0, 'white', 2)
-    ex = 'neutral' if lt < 4.4 else ('sad' if lt < 13.6 else 'closed')
+    ex = 'blush' if lt < 3.3 or 5.3 < lt < 7.8 else ('sad' if lt < 11.3 else ('calm' if lt < 13.6 else 'closed'))
     lead(img, 120, 132, 'phone' if not flipped else 'idle', ex, 1, 2)
     if lt > 15.0:
         sfx(img, 88, 36, '咚咚', t, t - lt + 15.0, 1.2, 'white', 1)
     if lt > 15.6:
         say(img, 92, 50, '睡吧', tail='l')
-    n = min(3, rnd + (1 if cyc > 3.2 else 0))
+    n = (lt > 4.2) + (lt > 8.5)
     if n:
         draw_text(img, 8, 8, f'删除 ×{n}', (255, 140, 150), outline=INK_C)
+    if sent:
+        draw_text(img, 196, 102, '已发送：晚安', CREAM, outline=INK_C)
 
 
 def s_final(img, t, lt, v):
