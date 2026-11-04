@@ -140,7 +140,7 @@ LEAD_LEGS = {
 LEAD_PAL = {'h': (44, 34, 54), 's': (250, 214, 186), 'w': (250, 230, 168), 'd': (214, 184, 118), 'e': (86, 96, 176),
             'p': (62, 66, 112), 'b': (236, 236, 244), 'g': (150, 230, 255), 'r': (240, 80, 120)}
 
-# 你：斜刘海遮住半边眉眼（“眼神逃避”）+ 一缕紫色挑染 + 酒红长大衣 + 永远亮着的手机。
+# 你（女生）：过肩长发 + 斜刘海遮住半边眉眼（“眼神逃避”）+ 一缕紫色挑染 + 酒红长大衣 + 短靴 + 永远亮着的手机。
 YOU_HEAD = '''
 .....hhhhhh.....
 ...hhhhhhhhhh...
@@ -158,10 +158,10 @@ YOU_HEAD = '''
 '''
 YOU_TORSO = {
     'idle': '''
-......ssss......
-...cccciiicccc..
-..ccccciiccccc..
-.cccccciicccccc.
+.hh...ssss...hh.
+.hhcccciiiccchh.
+.hhcccciicccchh.
+.hccccciiccccch.
 .ccdccciicccdcc.
 .ccdccciicccdcc.
 .ccdccciicccdcc.
@@ -173,10 +173,10 @@ YOU_TORSO = {
 ...cccc..cccc...
 ''',
     'phone': '''
-......ssss......
-...cccciiicccc..
-..ccccciiccccc..
-.cccccciicccccc.
+.hh...ssss...hh.
+.hhcccciiiccchh.
+.hhcccciicccchh.
+.hccccciiccccch.
 .ccdccciicccdcc.
 .ccdccciiccsgg..
 .ccdccciiccsgg..
@@ -190,16 +190,16 @@ YOU_TORSO = {
 }
 YOU_LEGS = {
     'stand': '''
-....lll..lll....
-....lll..lll....
-....lll..lll....
-...bbbb..bbbb...
+....ll....ll....
+....ll....ll....
+....bb....bb....
+...bbb...bbb....
 ''',
     'walk': '''
-...lll....lll...
-..lll......lll..
-..lll......lll..
-.bbbb......bbbb.
+...ll......ll...
+..ll........ll..
+..bb........bb..
+.bbb.......bbb..
 ''',
 }
 YOU_PAL = {'h': (36, 26, 44), 'v': (150, 92, 190), 's': (248, 214, 194), 'c': (150, 48, 88), 'd': (108, 30, 64),
@@ -249,12 +249,13 @@ LEAD_FACES = {
     'awk': [(4, 8), (5, 9), (4, 10), (11, 8), (10, 9), (11, 10), (3, 10, BLUSH_C), (12, 10, BLUSH_C), (6, 12), (7, 11), (8, 12), (9, 11)],
     'calm': [(4, 9), (5, 9), (10, 9), (11, 9), (6, 11), (7, 12), (8, 12), (9, 11), (3, 10, BLUSH_C), (12, 10, BLUSH_C)],
 }
+LIP_C = (214, 80, 110)
 YOU_FACES = {
-    'smile': [(5, 8), (5, 9), (10, 8), (10, 9), (6, 11), (7, 12), (8, 12), (9, 11)],
-    'side': [(4, 9), (5, 9, WHITE_C), (9, 9), (10, 9, WHITE_C), (7, 12), (8, 12), (12, 6, TEAR_C), (12, 7, TEAR_C)],
-    'wink': [(4, 9), (5, 9), (6, 9), (10, 8), (10, 9), (7, 12), (8, 12), (9, 11), (11, 10, BLUSH_C), (12, 10, BLUSH_C)],
-    'bored': [(4, 8), (5, 8), (6, 8), (5, 9), (9, 8), (10, 8), (11, 8), (10, 9), (7, 12), (8, 12)],
-    'awk': [(5, 9), (10, 9), (6, 12), (7, 11), (8, 12), (9, 11), (3, 10, BLUSH_C), (4, 10, BLUSH_C), (11, 10, BLUSH_C), (12, 10, BLUSH_C), (13, 7, TEAR_C), (13, 8, TEAR_C)],
+    'smile': [(4, 8), (5, 8), (5, 9), (10, 8), (11, 8), (10, 9), (6, 11, LIP_C), (7, 12, LIP_C), (8, 12, LIP_C), (9, 11, LIP_C)],
+    'side': [(4, 8), (4, 9), (5, 9, WHITE_C), (9, 9), (10, 9, WHITE_C), (11, 8), (7, 12, LIP_C), (8, 12, LIP_C), (12, 6, TEAR_C), (12, 7, TEAR_C)],
+    'wink': [(4, 9), (5, 9), (6, 9), (10, 8), (11, 8), (10, 9), (7, 12, LIP_C), (8, 12, LIP_C), (9, 11, LIP_C), (11, 10, BLUSH_C), (12, 10, BLUSH_C)],
+    'bored': [(4, 8), (5, 8), (6, 8), (5, 9), (9, 8), (10, 8), (11, 8), (10, 9), (7, 12, LIP_C), (8, 12, LIP_C)],
+    'awk': [(4, 8), (5, 9), (10, 9), (11, 8), (6, 12, LIP_C), (7, 11, LIP_C), (8, 12, LIP_C), (9, 11, LIP_C), (3, 10, BLUSH_C), (4, 10, BLUSH_C), (11, 10, BLUSH_C), (12, 10, BLUSH_C), (13, 7, TEAR_C), (13, 8, TEAR_C)],
 }
 MOON_FACES = {
     'sleep': [(3, 8), (4, 8), (5, 8), (5, 11)],
@@ -333,7 +334,7 @@ def you_head(img, x, y, expr, scale=2):
     put(img, spr, x, y, scale, 1, anchor='topleft')
 
 
-CAST = {'me': '我', 'you': '你（多情人）', 'moon': '睡帽弯月'}
+CAST = {'me': '我（男生）', 'you': '你（女生·多情人）', 'moon': '睡帽弯月'}
 
 
 def CAST_SHEET(img, t):
@@ -341,7 +342,7 @@ def CAST_SHEET(img, t):
     img.paste(Image.fromarray(dither_grad(H, W, (30, 28, 70), (62, 56, 120))), (0, 0))
     draw_text(img, 6, 3, '《晚安》角色设定', (255, 230, 150), outline=INK_C)
     # 我
-    draw_text(img, 6, 18, '我', WHITE, outline=INK_C)
+    draw_text(img, 6, 18, '我（他）', WHITE, outline=INK_C)
     ph = int(t * 2) % 2
     lead(img, 22, 92, 'idle', 'neutral')
     lead(img, 56, 92, 'phone', 'blush')
@@ -349,7 +350,7 @@ def CAST_SHEET(img, t):
     for i, e in enumerate(['neutral', 'happy', 'heart', 'shock', 'sad', 'closed', 'blush', 'cry', 'awk', 'calm']):
         lead_head(img, 112 + (i % 5) * 41, 20 + (i // 5) * 36, e, 2)
     # 你
-    draw_text(img, 6, 98, '你', WHITE, outline=INK_C)
+    draw_text(img, 6, 98, '你（她）', WHITE, outline=INK_C)
     you(img, 22, 176, 'idle', 'smile', 1)
     you(img, 56, 176, 'phone', 'bored', 1, walk=True, t=t)
     for i, e in enumerate(['smile', 'side', 'wink', 'bored', 'awk']):
