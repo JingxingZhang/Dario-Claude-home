@@ -48,6 +48,23 @@ def has_audio(path):
     return bool(r.stdout.strip())
 
 
+TARGET_MEAN_DB = -33.0
+
+
+def level_gain(path, t_in, dur):
+    """Gain that brings this shot's ambience to a common mean level (clamped)."""
+    r = subprocess.run(["ffmpeg", "-v", "info", "-ss", f"{t_in:.3f}", "-t", f"{dur:.3f}", "-i", str(path),
+                        "-af", "volumedetect", "-f", "null", "-"], capture_output=True, text=True)
+    for line in r.stderr.splitlines():
+        if "mean_volume:" in line:
+            try:
+                mean = float(line.split("mean_volume:")[1].split("dB")[0])
+            except ValueError:
+                break
+            return max(-12.0, min(8.0, TARGET_MEAN_DB - mean))
+    return 0.0
+
+
 def resolve(shot):
     if shot.get("file"):
         p = ROOT / shot["file"]
@@ -98,7 +115,9 @@ def render_shot(shot, src, nframes, fps, W, H, out):
     vf = f"setpts=(PTS-STARTPTS)/{speed},fps={fps},{fit},tpad=stop_mode=clone:stop_duration=5"
     cmd = ["ffmpeg", "-y", "-v", "error", "-ss", f"{t_in:.4f}", "-i", str(src)]
     if has_audio(src):
-        af = f"asetpts=PTS-STARTPTS,atempo={speed},apad"
+        gain = level_gain(src, t_in, need)
+        af = (f"asetpts=PTS-STARTPTS,atempo={speed},volume={gain:.1f}dB,"
+              f"afade=t=in:d=0.02,afade=t=out:st={max(dur - 0.04, 0):.3f}:d=0.04,apad")
         cmd += ["-vf", vf, "-af", af, "-map", "0:v", "-map", "0:a", *enc]
     else:
         cmd += [*silent, "-vf", vf, "-map", "0:v", "-map", "1:a", *enc]
@@ -170,6 +189,8 @@ def main():
                 f"afade=t=out:st={total - fo:.3f}:d={fo}[mus]")
         else:
             print(f"  ! music file {m.get('file')} missing -> silent score")
+        lufs = edl.get("master_lufs")
+        master = f"loudnorm=I={lufs}:TP=-1.5:LRA=11,aresample=48000" if lufs else "anull"
         cad = edl.get("clip_audio_db")
         af_parts, labels = list(mix_inputs), []
         if mix_inputs:
@@ -179,7 +200,7 @@ def main():
             labels.append("[sfx]")
         if labels:
             af_parts.append(f"{''.join(labels)}amix=inputs={len(labels)}:normalize=0,"
-                            f"alimiter=limit=0.95,apad[aout]")
+                            f"{master},alimiter=limit=0.95,apad[aout]")
         else:
             af_parts.append("anullsrc=r=48000:cl=stereo[aout]")
         fc = f"[0:v]{','.join(vf)}[vout];" + ";".join(af_parts)
