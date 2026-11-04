@@ -46,11 +46,12 @@ class Song:
 DEFAULT_STYLE = dict(pal='white', kwpal='pink')  # 其余默认见 huazi.Line：size=120, cy=830
 
 
-def build_lyrics(song, cfg):
+def build_lyrics(song, cfg, base=None):
     """cfg：列表（按句序）或 dict（键为句序号，或直接用歌词原文——重复的句子自动共用一套样式），每项是 Z.Line 的参数；kw 可配 kwpal 为列表实现多组重点词各自换色。"""
     out = []
     for i, (a, b, s) in enumerate(song.lines):
         c = dict(DEFAULT_STYLE)
+        c.update(base or {})
         c.update((cfg[i] if isinstance(cfg, list) else (cfg.get(i) or cfg.get(s, {}))) or {})
         nxt = song.lines[i + 1][0] if i + 1 < len(song.lines) else b + 2
         b = min(b, nxt - 0.05)
@@ -69,10 +70,12 @@ def build_lyrics(song, cfg):
 
 
 class MV:
-    def __init__(self, song, shots, cfg, danmu=None, title_style=None, replay_label='回放 REPLAY', tag='像素 MV'):
+    def __init__(self, song, shots, cfg, danmu=None, title_style=None, replay_label='回放 REPLAY', tag='像素 MV', lyric_base=None):
+        """lyric_base：全曲歌词花字的基调（按曲风定），如 dict(pop=1.08, stagger=0.09, float_amp=3) 抒情、dict(pop=1.45, stagger=0.03, shake=5) 燃。
+        title_style：片头片尾歌名的样式（pal/size/angle/deco/pop…）。"""
         self.song = song
         self.shots = shots
-        self.lyrics = build_lyrics(song, cfg)
+        self.lyrics = build_lyrics(song, cfg, lyric_base)
         self.danmu = danmu or {}
         p = song.p
         self.title_end = float(p.get('title_end', 9.6))

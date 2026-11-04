@@ -71,7 +71,8 @@ def _arm(d, sx, sy, hx, hy, cloth, skin):
 
 def person(img, x, y, who='girl', face=1, expr='smile', arm='down', t=0.0, scale=2, walk=False,
            umbrella=None, glasses=False, kneel=False, horns=False, mask=False, breathe=0.0):
-    """x,y：脚底中点（原生坐标）。face=1 朝右，-1 朝左。"""
+    """通用 Q 版小人（脚手架）：只用于快速试画、路人群演。主角和重要角色请按歌用 charkit 从零设计。
+    x,y：脚底中点（原生坐标）。face=1 朝右，-1 朝左。"""
     p = PAL[who] if isinstance(who, str) else who
     hs, body = p.get('hair_style', 'short'), p.get('body', 'hoodie')
     im = Image.new('RGBA', (30, 42), (0, 0, 0, 0))

@@ -172,11 +172,15 @@ def draw_sticker(base, kind, x, y, size, t, born, seed=0):
 
 # ---------------- 一句花字 ----------------
 class Line:
-    def __init__(self, t0, t1, text, pal='white', kw=None, kwpal='pink', size=120, cx=960, cy=830, angle=0.0, deco=(), kwscale=1.3, stagger=0.05):
+    def __init__(self, t0, t1, text, pal='white', kw=None, kwpal='pink', size=120, cx=960, cy=830, angle=0.0, deco=(), kwscale=1.3, stagger=0.05,
+                 pop=1.28, float_amp=5, shake=0, beat_kick=0.08):
+        """动效随曲风调：pop 入场回弹（抒情 1.08、默认 1.28、燃 1.45），stagger 逐字间隔（快歌 0.03、慢歌 0.09），
+        float_amp 漂浮幅度，shake 抖动像素（摇滚/说唱 4–8），beat_kick 重点词随鼓点放大比例。"""
         self.t0, self.t1, self.text = t0, t1, text
         self.pal, self.kw, self.kwpal, self.size = pal, kw or [], kwpal, size
         self.cx, self.cy, self.angle, self.deco = cx, cy, angle, deco
         self.kwscale, self.stagger = kwscale, stagger
+        self.pop, self.float_amp, self.shake, self.beat_kick = pop, float_amp, shake, beat_kick
         self._layout()
 
     def _layout(self):
@@ -237,18 +241,20 @@ class Line:
             if p <= 0:
                 continue
             if p < 0.55:
-                sc = ease(p / 0.55) * 1.28
+                sc = ease(p / 0.55) * self.pop
             elif p < 1:
-                sc = 1.28 - 0.28 * ease((p - 0.55) / 0.45)
+                sc = self.pop - (self.pop - 1) * ease((p - 0.55) / 0.45)
             else:
                 sc = 1.0
                 if it['kw']:
-                    sc += 0.08 * math.exp(-beat_phase * 6)
+                    sc += self.beat_kick * math.exp(-beat_phase * 6)
             sc *= 1 - ease(out)
             if sc <= 0.02:
                 continue
             back, front, _ = char_sprite(it['ch'], it['size'], it['pal'], round(self.angle))
-            fl = math.sin(t * 2.4 + it['i'] * 0.7) * 5
+            fl = math.sin(t * 2.4 + it['i'] * 0.7) * self.float_amp
+            if self.shake:
+                fl += (hsh(int(t * 24), it['i']) - 0.5) * 2 * self.shake
             dy = -(1 - clamp(p)) * it['size'] * 0.35 + fl - out * 40
             if abs(sc - 1) > 0.01:
                 sz = (max(1, int(back.width * sc)), max(1, int(back.height * sc)))
