@@ -43,7 +43,7 @@ LINES = load_lines()
 LS = [a for a, b, s in LINES]
 
 CFG = {
-    '嗨': dict(pal='yel', size=210, cx=560, cy=250, angle=-8, deco=('star', 'bang')),
+    '嗨': dict(pal='yel', size=210, cx=960, cy=250, angle=-8, deco=('star', 'bang')),
     '怎么那么坏': dict(pal='pink', kw=['坏'], kwpal='purp', kwscale=1.5, angle=4, deco=('horn', 'bang')),
     '才两天就深爱': dict(pal='white', kw=['两天', '深爱'], kwpal=['yel', 'red'], angle=-3, deco=('heart', 'star')),
     '说得好像真爱': dict(pal='whiteb', kw=['真爱'], kwpal='pink', angle=3, deco=('q', 'star')),
