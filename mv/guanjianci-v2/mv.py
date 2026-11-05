@@ -229,6 +229,9 @@ def you_on(img, t, x, y, pose='idle', expr='smile', face_dir=1, outfit='autumn')
 
 def you_sit(img, x, y, expr, face_dir, outfit='autumn'):
     """坐着 / 桌子后的你：只画上半身"""
+    import cast as _C
+    if _C.STYLE >= 1:
+        return _C.you_upper(img, x, y, expr, face_dir, outfit)
     from cast import YOU_HEAD, YOU_BODY, _join, _face, YOU_EYE, YOU_MOUTH, YOU_OUTFIT
     body = '\n'.join(YOU_BODY['idle'].strip('\n').split('\n')[:7])
     p = dict(YOU_PAL); p.update(YOU_OUTFIT.get(outfit, {}))
@@ -398,6 +401,223 @@ def station(img, t, door_open=1.0):
 
 
 # ======================= ④ 镜头（按故事顺序，每个只用一次）=======================
+
+# ======================= 画风迭代：STYLE>=1 时换用精修背景（style_bg.py）=======================
+import cast as _CAST
+STYLE = _CAST.STYLE
+if STYLE >= 1:
+    import style_bg as SB
+
+    def sky(img, t, season, tod, hz):
+        SB.GRADE[0] = SB.sky_key(season, tod)
+        SB.sky(img, t, season, tod, hz)
+
+    def tree(img, x, ground, season='autumn', k=1.0, snow=0.0):
+        SB.tree(img, x, ground, season, k, snow)
+
+    def snowfall(img, t, n=50, k=1.0, top=0, bot=H):
+        SB.snowfall(img, t, n, k, top, bot)
+
+    def street_lamp(img, x, ground, on):
+        d = ImageDraw.Draw(img)
+        R(d, x - 1, ground - 58, 3, 58, (84, 82, 100)); R(d, x - 1, ground - 58, 1, 58, (120, 118, 140))
+        R(d, x - 6, ground - 63, 13, 4, (84, 82, 100)); R(d, x - 4, ground - 4, 9, 4, (70, 68, 86))
+        R(d, x - 4, ground - 59, 9, 3, (255, 240, 190) if on else (150, 150, 166))
+        if on:
+            SB.glow_np(img, x, ground - 56, 40, (255, 220, 150), 0.42)
+            SB.glow_np(img, x + 4, ground + 6, 26, (255, 210, 150), 0.25)
+
+    def avenue(img, t, season='autumn', scroll=0.0, tod=0.45, ground=104, lamps=None, fall=1.0, k=1.0):
+        key = SB.sky_key(season, tod)
+        SB.sky(img, t, season, tod, ground)
+        SB.city(img, ground - 8, season, key)
+        d = ImageDraw.Draw(img)
+        c2 = SB.SKY[key][2]
+        tones = SB.LEAF_TONES['year2' if season == 'year2' else 'autumn']
+        for layer, (par, fade, base_y) in enumerate(((0.22, 0.6, ground - 6), (0.35, 0.42, ground - 2))):   # 远处两层树丛（空气透视）
+            for i in range(22):
+                x = int((i * 19 + hsh(i, layer, 61) * 12 - scroll * par) % 418) - 49
+                rr = 5 + int(hsh(i, layer, 62) * 7)
+                yy = base_y - int(hsh(i, layer, 63) * 6)
+                if season == 'winter':
+                    col = lerpc((110, 90, 84), c2, fade)
+                    d.line([(x, base_y), (x, yy - rr)], fill=col)
+                    d.line([(x, yy - rr // 2), (x - 4, yy - rr - 3)], fill=col); d.line([(x, yy - rr // 2 - 2), (x + 4, yy - rr - 4)], fill=col)
+                    d.point((x - 4, yy - rr - 4), fill=(250, 252, 255))
+                else:
+                    kk = max(0.35, k)
+                    r2 = max(2, int(rr * kk))
+                    disc(d, x + 1, yy - r2 + 1, r2, lerpc(tones[0], c2, fade))
+                    disc(d, x, yy - r2, r2 - 1, lerpc(tones[1], c2, fade))
+                    disc(d, x - 1, yy - r2 - 1, max(1, r2 - 3), lerpc(tones[2], c2, fade))
+        SB.ground_fill(img, ground, season, scroll, tod)
+        for i in range(4):
+            x = int((i * 110 + 40 - scroll) % 440) - 60
+            tree(img, x, ground + 2, season, k)
+            if lamps is not None and i % 2 == 1:
+                street_lamp(img, x + 55, ground + 2, lamps)
+        if season == 'winter':
+            SB.snowfall(img, t, 70 * fall)
+        elif fall:
+            SB.falling_leaves(img, t, 16 * fall, scroll, ground, season)
+        if tod > 0.9:
+            a = np.asarray(img).astype(float) * np.array((0.78, 0.8, 0.95))
+            img.paste(Image.fromarray(a.astype(np.uint8)))
+            if lamps:
+                for i in range(4):
+                    x = int((i * 110 + 40 - scroll) % 440) - 60
+                    if i % 2 == 1:
+                        street_lamp(img, x + 55, ground + 2, lamps)
+        SB.GRADE[0] = key
+        SB.mark(img)
+
+    def room(img, t, tod=1.0, season='autumn', desk=True, lamp=True, wx=14):
+        night = tod > 0.9
+        wall = ((62, 64, 104), (44, 46, 82)) if night else ((242, 234, 222), (226, 216, 200))
+        img.paste(Image.fromarray(SB.grad3(H, W, wall[0], lerpc(wall[0], wall[1], 0.5), wall[1])), (0, 0))
+        d = ImageDraw.Draw(img)
+        R(d, 0, 84, W, 16, lerpc(wall[1], (0, 0, 0), 0.08)); R(d, 0, 84, W, 1, lerpc(wall[1], (255, 255, 255), 0.25))
+        win = Image.new('RGB', (W, H))
+        sky(win, t, season, tod, 78)
+        if season == 'winter':
+            snowfall(win, t, 40, 1.0, 0, 78)
+        wd = ImageDraw.Draw(win)
+        wd.line([(wx, 30), (wx + 50, 44), (wx + 86, 40)], fill=(96, 70, 58), width=2)
+        if season == 'winter':
+            wd.line([(wx + 4, 29), (wx + 46, 41)], fill=(246, 250, 255))
+        else:
+            tones = SB.LEAF_TONES['year2' if season == 'year2' else 'autumn']
+            for i in range(16):
+                px, py = wx + 4 + int(hsh(i, 21) * 72), 24 + int(hsh(i, 22) * 26)
+                c = tones[2] if i % 3 else tones[1]
+                if night:
+                    c = lerpc(c, (50, 50, 90), 0.4)
+                wd.rectangle([px, py, px + 3, py + 2], fill=c); wd.point((px, py), fill=tones[3] if not night else c)
+        img.paste(win.crop((wx, 10, wx + 86, 78)), (wx, 10))
+        fr = (150, 118, 92) if night else (200, 166, 128)
+        d.rectangle([wx - 2, 8, wx + 87, 79], outline=fr, width=3)
+        R(d, wx + 42, 10, 2, 68, fr); R(d, wx, 43, 86, 2, fr)
+        R(d, wx - 8, 79, 102, 4, lerpc(fr, (255, 255, 255), 0.2)); R(d, wx - 8, 83, 102, 1, lerpc(fr, (0, 0, 0), 0.2))
+        cur = (120, 104, 140) if night else (224, 206, 196)
+        for cx_ in (wx - 10, wx + 90):          # 窗帘
+            R(d, cx_, 4, 8, 82, cur)
+            for j in range(0, 8, 3):
+                R(d, cx_ + j, 4, 1, 82, lerpc(cur, (0, 0, 0), 0.12))
+        R(d, wx - 14, 2, 118, 3, (150, 130, 120))
+        if season == 'winter':
+            R(d, wx - 6, 77, 98, 2, (246, 250, 255))
+        # 书架 + 绿植（不和窗户重叠时）
+        sx = 196 if wx < 100 else 24
+        R(d, sx, 40, 70, 3, lerpc(fr, (0, 0, 0), 0.1))
+        bx = sx + 2
+        for i in range(9):
+            bw = 4 + int(hsh(i, 91) * 3); bh = 12 + int(hsh(i, 92) * 6)
+            col = [(140, 170, 210), (226, 200, 150), (200, 150, 160), (150, 190, 160), (240, 230, 210)][i % 5]
+            if night:
+                col = lerpc(col, (60, 60, 100), 0.45)
+            R(d, bx, 40 - bh, bw, bh, col); R(d, bx, 40 - bh, 1, bh, lerpc(col, (255, 255, 255), 0.2))
+            bx += bw + 1
+        R(d, sx + 56, 32, 8, 8, (210, 150, 120))
+        for j in range(5):
+            disc(d, sx + 57 + (j - 2) * 3, 28 - (j % 2) * 3, 2, (110, 170, 110) if not night else (70, 110, 90))
+        if lamp:
+            lx = 286 if wx < 200 else 170
+            R(d, lx - 1, 70, 3, 30, (90, 86, 104)); R(d, lx - 8, 98, 17, 3, (90, 86, 104))
+            d.polygon([(lx - 11, 70), (lx + 11, 70), (lx + 6, 58), (lx - 6, 58)], fill=(240, 176, 110))
+            d.line([(lx - 6, 59), (lx - 10, 69)], fill=(255, 220, 170))
+            if night:
+                SB.glow_np(img, lx, 78, 110, (255, 214, 150), 0.4)
+        SB.GRADE[0] = 'night' if night else SB.sky_key(season, tod)
+        SB.mark(img)
+        if desk:
+            d = ImageDraw.Draw(img)
+            R(d, 0, 100, W, 80, (178, 128, 88)); R(d, 0, 100, W, 2, (214, 168, 120)); R(d, 0, 102, W, 1, (140, 96, 64))
+            for i in range(8):
+                y = 108 + i * 9
+                d.line([(0, y), (W, y + int(hsh(i, 95) * 3))], fill=(168, 118, 80))
+            if night:
+                a = np.asarray(img).astype(float); a[100:] *= np.array((0.82, 0.8, 0.9))
+                img.paste(Image.fromarray(a.astype(np.uint8)))
+                SB.glow_np(img, 286 if wx < 200 else 170, 104, 120, (255, 200, 140), 0.32)
+        gcard(t, None, wx + 43, 44, 43, 34, r=18, refr=0.7, mag=0.03, tint=(190, 210, 255), tint_a=0.06, shadow=0.0)
+
+    def station(img, t, door_open=1.0):
+        SB.sky(img, t, 'winter', 0.5, 104)
+        SB.city(img, 96, 'winter', 'winter')
+        d = ImageDraw.Draw(img)
+        R(d, 0, 0, W, 12, (104, 112, 140)); R(d, 0, 11, W, 1, (150, 158, 186)); R(d, 0, 12, W, 2, (246, 250, 255))
+        for x in range(0, W, 32):
+            d.line([(x, 0), (x + 10, 11)], fill=(90, 98, 126))
+        for x in (40, 150):
+            R(d, x, 14, 5, 90, (130, 138, 164)); R(d, x, 14, 1, 90, (170, 178, 200))
+            R(d, x - 8, 30, 21, 9, (246, 248, 252)); d.rectangle([x - 8, 30, x + 12, 38], outline=(150, 158, 186))
+            R(d, x - 5, 33, 15, 3, (90, 140, 170))
+        img.paste(Image.fromarray(SB.grad3(76, W, (184, 190, 208), (196, 202, 218), (214, 218, 230), 0.4, 10)), (0, 104))
+        d = ImageDraw.Draw(img)
+        R(d, 0, 108, W, 3, (240, 206, 96))
+        for x in range(2, W, 6):
+            d.point((x, 109), fill=(220, 180, 70))
+        for y in (122, 140, 164):
+            d.line([(0, y), (W, y)], fill=(172, 178, 196))
+        # 列车
+        R(d, 196, 28, 124, 76, (232, 236, 242)); R(d, 196, 28, 124, 3, (200, 206, 218)); R(d, 196, 100, 124, 4, (190, 196, 210))
+        R(d, 196, 86, 124, 5, (84, 156, 176)); R(d, 196, 91, 124, 1, (150, 206, 220))
+        for wx_ in (206, 272):
+            R(d, wx_, 40, 40, 30, (48, 62, 98)); d.rectangle([wx_, 40, wx_ + 39, 69], outline=(170, 176, 192))
+            d.line([(wx_ + 6, 69), (wx_ + 22, 41)], fill=(90, 110, 150)); d.line([(wx_ + 10, 69), (wx_ + 26, 41)], fill=(80, 98, 140))
+        R(d, 249, 38, 20, 52, (170, 176, 192))
+        R(d, 250, 39, 18, 50, (70, 82, 116))
+        dw = int(18 * door_open)
+        if dw < 18:
+            R(d, 250, 39, 18 - dw, 50, (214, 218, 228))
+        SB.snowfall(img, t, 40, 1.0, 0, 104)
+        SB.GRADE[0] = 'winter'
+        SB.mark(img)
+
+    def page(img, tint=None, holes=True, rules=True):
+        pc = tint or PAPER
+        img.paste(Image.fromarray(SB.grad3(H, W, lerpc(pc, (255, 255, 255), 0.45), lerpc(pc, (255, 255, 255), 0.2), pc, 0.5, 12)), (0, 0))
+        a = np.asarray(img).astype(float)
+        sh = np.clip(1 - np.arange(W) / 40, 0, 1) ** 2 * 0.12      # 装订处的柔和阴影
+        a *= (1 - sh)[None, :, None]
+        img.paste(Image.fromarray(a.astype(np.uint8)))
+        d = ImageDraw.Draw(img)
+        if rules:
+            for y in range(22, H, 14):
+                d.line([(28, y), (W, y)], fill=lerpc((206, 218, 236), pc, 0.15))
+        d.line([(34, 0), (34, H)], fill=(240, 170, 160))
+        if holes:
+            for y in range(10, H, 18):
+                disc(d, 12, y, 3, lerpc(pc, (90, 80, 90), 0.5)); d.point((11, y - 1), fill=lerpc(pc, (60, 50, 60), 0.7))
+
+    def board(img, t, chalk_lines=()):
+        img.paste(Image.fromarray(SB.grad3(H, W, (234, 222, 200), (224, 210, 186), (210, 194, 168))), (0, 0))
+        d = ImageDraw.Draw(img)
+        R(d, 16, 2, 288, 96, (170, 124, 84)); R(d, 16, 2, 288, 2, (204, 160, 116)); R(d, 16, 96, 288, 2, (130, 92, 62))
+        img.paste(Image.fromarray(SB.grad3(84, 276, (52, 96, 80), (46, 88, 72), (40, 78, 64), 0.5, 10)), (22, 8))
+        d = ImageDraw.Draw(img)
+        for i in range(40):
+            d.point((24 + int(hsh(i, 41) * 270), 10 + int(hsh(i, 42) * 80)), fill=(74, 116, 98))
+        for i in range(3):
+            x0 = 40 + i * 90
+            d.line([(x0, 70 + i * 4), (x0 + 40, 66 + i * 4)], fill=(70, 112, 96))
+        R(d, 14, 98, 292, 4, (196, 150, 104))
+        img.paste(Image.fromarray(SB.grad3(76, W, (196, 156, 116), (186, 146, 108), (170, 130, 96), 0.5, 8)), (0, 104))
+        d = ImageDraw.Draw(img)
+        for x in range(0, W, 40):
+            d.line([(x, 104), (x - 10, H)], fill=(160, 122, 90))
+        for (x, y, s, col, sc) in chalk_lines:
+            draw_text(img, x, y, s, col, sc)
+
+    def _bench_front_s(img):
+        d = ImageDraw.Draw(img)
+        for y in (96, 103):
+            R(d, 98, y, 124, 4, (176, 120, 80)); R(d, 98, y, 124, 1, (214, 162, 116)); R(d, 98, y + 3, 124, 1, (140, 92, 60))
+        for x in (104, 214):
+            R(d, x, 107, 3, 14, (90, 86, 100)); R(d, x, 107, 1, 14, (130, 126, 144))
+        R(d, 96, 110, 128, 4, (156, 104, 70)); R(d, 96, 110, 128, 1, (196, 146, 104))
+
+
 # ---------------- 前奏：深秋夜，空白的本子 ----------------
 def s_title(img, t, lt, v):
     """前奏：空白笔记本“关于____”，小杏从窗外飘进来落在本子上"""
@@ -813,6 +1033,8 @@ def s_station_split(img, t, lt, v):
     a = Image.new('RGB', (W, H)); b = Image.new('RGB', (W, H))
     station(a, t, 1.0); station(b, t, 1.0)
     img.paste(a.crop((0, 0, 158, H)), (0, 0)); img.paste(b.crop((162, 0, W, H)), (162, 0))
+    if STYLE >= 2:
+        SB.BGSNAP[0] = img.copy()
     k = ease(seg(lt, 0.2, 1.6))
     me_on(img, t, 40, 122, 'idle', 'smile', 1, 'winter', force=False)
     you_on(img, t, int(lerp(150, 80, k)), 122, 'walk1' if k < 1 and int(lt * 4) % 2 else 'idle', 'happy', -1, 'winter')
@@ -1206,6 +1428,10 @@ def s_end(img, t, lt, v):
         gsign(40, 44, '谢谢收看', 2)
 
 
+if STYLE >= 1:
+    bench_front = _bench_front_s
+
+
 # ======================= ⑤ 镜头表（每个镜头函数只用一次）=======================
 I = L
 SHOTS = [
@@ -1266,7 +1492,34 @@ for i in range(19, 24):
     c = dict(CFG[song.lines[i][2]]); c['pal'] = 'whiteb' if c['pal'] == 'white' else 'white'; CFG[i] = c
 CFG[30] = dict(CFG['你是我的关键词'], size=150, kwscale=1.5)
 
-MVX = MV(song, SHOTS, CFG, title_style=TITLE_STYLE, lyric_base=LYRIC_BASE, sections=SECTIONS)
+import glassui as _G
+
+
+class StyledMV(MV):
+    """迭代二：在引擎的玻璃层之前，加景深、轮廓光、光束和调色"""
+    def frame(self, t):
+        _G.CUR[0] = t
+        i = self.shot_at(t)
+        _G.GL.clear(); SB.BGSNAP[0] = None; SB.GRADE[0] = None
+        img = self.compose(t, i)
+        items = list(_G.GL); bgp = SB.BGSNAP[0]; key = SB.GRADE[0]
+        t0 = self.shots[i][0]
+        if i > 0 and t - t0 < 0.16:
+            prev = self.compose(t, i - 1)
+            k = (t - t0) / 0.16
+            m = np.tile(BAYER, (H // 4 + 1, W // 4 + 1))[:H, :W] < k
+            img = Image.fromarray(np.where(m[:, :, None], np.asarray(img), np.asarray(prev)).astype(np.uint8))
+            bgp = None
+        _G.GL.clear()
+        big = img.resize((Z.FW, Z.FH), Image.NEAREST)
+        SB.hd_pass(big, img, bgp, t, key)
+        if self.glass:
+            self.glass_pass(big, t, items)
+        self.overlay(big, t, i)
+        return big
+
+
+MVX = (StyledMV if STYLE >= 2 else MV)(song, SHOTS, CFG, title_style=TITLE_STYLE, lyric_base=LYRIC_BASE, sections=SECTIONS)
 frame = MVX.frame
 DUR = song.dur
 
