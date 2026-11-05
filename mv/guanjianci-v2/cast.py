@@ -396,7 +396,7 @@ def leaf(img, cx, cy, expr='happy', scale=2, ang=0.0, pal=None, sign=None, arms=
 import os as _os
 from functools import lru_cache as _lru
 import numpy as _np
-STYLE = int(_os.environ.get('PIXMV_STYLE', '0'))
+STYLE = int(_os.environ.get('PIXMV_STYLE', '2'))       # 默认迭代二画风；PIXMV_STYLE=0 可回到原版
 # 迭代版的柔和配色（Apple 式：低饱和、干净、不用纯黑）
 SOFT = {
     'me': {'h': (52, 46, 66), 'H': (88, 80, 104), 's': (252, 222, 198), 'S': (236, 196, 172), 'c': (72, 100, 160), 'C': (54, 78, 130),

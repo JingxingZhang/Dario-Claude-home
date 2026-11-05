@@ -132,6 +132,18 @@
 - `room(img, t, v2=False, fog=0.0, rain_k=1.0)` — 室内窗边（向原视频的雨夜窗景致意）
 - `street(img, t, v2=False, scroll=0.0, ground=128, rain_k=0.8, neon=None)`
 
+## refine — 角色精修（迭代二画风）
+- `render_char(img, art, pal, x, y, face_dir, eye=(列, 行, 间距), mth=(列, 行), expr='smile', bob=0)` — 精修角色：Scale2x + 体积光影 + 彩色描边 + 高清五官；x,y 脚底中点；大小等于原来 scale=2
+- `refined_sprite(art, pal)` — 没有五官的物件、宠物的精修精灵
+- `EXPR` — 表情表：normal smile happy blush shock stuck think sad heart zip；`face_hd(...)` 底层五官绘制
+
+## style — 迭代二画风的背景工具与高清光影层
+- `grad3(h, w, c0, c1, c2)` 三段渐变；`glow_np(img, cx, cy, r, col, k)` 柔和光晕
+- `sky(img, t, season, tod, hz)`（自动登记调色键）、`sky_key(season, tod)`、`cloud(...)`、`city(img, hz, season, key)`
+- `tree(img, x, ground, season, k)`、`crown / trunk / branches`、`ground_fill(img, ground, season, scroll, tod)`、`snowfall(img, t, n)`、`falling_leaves(img, t, n, scroll, ground, season)`
+- season 预设：autumn year2 summer spring winter（来自《关键词》，换歌就改 `LEAF_TONES`、`SKY`）
+- `mark(img)` — 背景画完时调用，登记背景快照（景深、轮廓光用）；`set_grade(key)` — 手动指定调色：day gold dawn winter night wnight None
+
 ## glassui — 液态玻璃组件（详见 liquid-glass.md）
 在镜头函数里登记，引擎放大画面后统一画。坐标默认原生（320×180）；born=出现时刻（全片秒），None=常驻。
 - `gchip(t, born, cx, cy, text, col=TXT, size=50, tint=白, tint_a=0.12, dur=99, minw=0, hd=False)` — 玻璃胶囊标签，字色按底色自动深浅
@@ -165,7 +177,7 @@
 ## engine — 引擎
 
 - `build_lyrics(song, cfg, base=None)` — cfg：列表（按句序）或 dict（键为句序号，或直接用歌词原文——重复的句子自动共用一套样式），每项是 Z.Line 的参数；kw 可配 kwpal 为列表实现多组重点词各自换色。
-- class `MV(self, song, shots, cfg, danmu=None, title_style=None, replay_label='回放 REPLAY', tag='像素 MV', lyric_base=None, glass=True, lyric_dock=True, sections=None, post_fx=True)` — lyric_base：全曲歌词花字的基调（按曲风定），如 dict(pop=1.08, stagger=0.09, float_amp=3) 抒情、dict(pop=1.45, stagger=0.03, shake=5) 燃。glass：液态玻璃层开关；lyric_dock：歌词玻璃托盘；sections：段落切换时刻（玻璃透镜横扫）；post_fx：柔光 + 暗角。danmu / replay_label 只为兼容旧项目，新流程不用回放。
+- class `MV(self, song, shots, cfg, danmu=None, title_style=None, replay_label='回放 REPLAY', tag='像素 MV', lyric_base=None, glass=True, lyric_dock=True, sections=None, post_fx=True, hd_light=True)` — hd_light：迭代二高清光影层（景深、轮廓光、光束、调色）； lyric_base：全曲歌词花字的基调（按曲风定），如 dict(pop=1.08, stagger=0.09, float_amp=3) 抒情、dict(pop=1.45, stagger=0.03, shake=5) 燃。glass：液态玻璃层开关；lyric_dock：歌词玻璃托盘；sections：段落切换时刻（玻璃透镜横扫）；post_fx：柔光 + 暗角。danmu / replay_label 只为兼容旧项目，新流程不用回放。
 - class `Song(self, root)` — Initialize self.  See help(type(self)) for accurate signature.
 
 ## sticker — 表情包

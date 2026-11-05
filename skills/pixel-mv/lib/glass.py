@@ -18,11 +18,25 @@ import huazi as Z
 FW, FH = 1920, 1080
 
 
-def spring(dt, w=14.0, z=6.5):
-    """0→1 带过冲的弹簧"""
+def spring(dt, response=0.42, damping=0.78):
+    """0→1 的阻尼弹簧（Apple 式参数：response 为周期秒数，damping 为阻尼比）。
+    起步速度为 0（不会“跳”一下），过冲约 8%，约 0.5 秒稳定。"""
     if dt <= 0:
         return 0.0
-    return 1 - math.exp(-dt * z) * math.cos(dt * w)
+    w = 2 * math.pi / response
+    z = damping
+    wd = w * math.sqrt(1 - z * z)
+    return 1 - math.exp(-z * w * dt) * (math.cos(wd * dt) + z * w / wd * math.sin(wd * dt))
+
+
+def ease_out(k):
+    k = min(1.0, max(0.0, k))
+    return 1 - (1 - k) ** 3
+
+
+def ease_in(k):
+    k = min(1.0, max(0.0, k))
+    return k * k * k
 
 
 def sdf_rrect(px, py, hw, hh, r):
@@ -35,6 +49,11 @@ def sdf_rrect(px, py, hw, hh, r):
 
 def sdf_circle(px, py, r):
     return np.sqrt(px * px + py * py) - r
+
+
+def sdf_ellipse(px, py, a, b):
+    """椭圆（近似距离场），用于移动中被拉长的透镜"""
+    return (np.sqrt((px / a) ** 2 + (py / b) ** 2) - 1) * min(a, b)
 
 
 def sdf_union(*ds, k=18.0):

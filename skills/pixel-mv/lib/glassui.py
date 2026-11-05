@@ -5,8 +5,13 @@
 引擎（engine.MV.frame）放大画面后再按登记顺序画出所有玻璃，然后才叠歌词花字和署名。
 
 坐标：除特别注明（hd=True）外，一律用原生坐标（320×180），内部 ×6 换算成高清。
-born：出现时刻（全片秒，通常写 t - lt + 镜头内秒）；born=None 表示常驻、不做出现动画。
-所有组件出现时都带弹簧动效（先横向、再纵向回弹，像一滴液体被拉开）。
+born：出现时刻（全片秒，通常写 t - lt + 镜头内秒）；born=None 表示“结构性”的玻璃（窗、镜面、玻璃管、分隔条），常驻、不做动画。
+
+动效（born 不为 None 的组件都有）：
+  出现：从 55% 大小弹开（横向先、纵向晚 0.05 秒，像一滴液体被拉开），同时 0.18 秒淡入，一道高光沿边缘扫过；
+  待机：轻微上下浮动（约 2 像素）；
+  退场：镜头结束前 0.26 秒自动收缩、淡出、微微上飘（引擎写入 SHOT），也可以用 dur 提前退场；
+  弹簧是 Apple 式的阻尼弹簧（起步速度为 0、过冲约 8%），不会突然跳动。
 
 本模块同名覆盖 props2 的 say / OS / popup / meter：先 `from props2 import *` 再 `from glassui import *`，
 原来的气泡、弹窗、数值条就自动变成玻璃版，参数兼容。
@@ -14,10 +19,12 @@ born：出现时刻（全片秒，通常写 t - lt + 镜头内秒）；born=None
 import math
 import numpy as np
 from PIL import ImageDraw
-from glass import glass, spring, sdf_rrect, sdf_circle, sdf_union, sdf_heart, htext, tw, ink
+from glass import glass, spring, ease_out, ease_in, sdf_rrect, sdf_circle, sdf_union, sdf_heart, htext, tw, ink
 
 GL = []           # 本帧登记的玻璃（闭包），引擎每帧清空
 CUR = [0.0]       # 引擎写入的当前全片秒（给不带 t 参数的组件用）
+SHOT = [0.0, 1e9]  # 引擎写入的当前镜头起止秒（组件在镜头结束前自动退场）
+EXIT = 0.26
 S6 = 6
 TXT = (40, 32, 56)
 PALC = {'yel': (190, 124, 16), 'pink': (222, 60, 84), 'cyan': (24, 126, 186), 'red': (220, 50, 60),
@@ -30,31 +37,55 @@ def _cl(x, a=0.0, b=1.0):
     return a if x < a else b if x > b else x
 
 
-def _pop(t, born, dur=99.0):
-    """出现 / 消失进度：返回 (横向弹簧, 纵向弹簧, 消失系数, 已出现秒)；不在显示期返回 None"""
+class Anim:
+    """一个组件这一帧的动画状态"""
+    __slots__ = ('sx', 'sy', 'alpha', 'dy', 'light', 'dt')
+
+    def __init__(self, sx=1.0, sy=1.0, alpha=1.0, dy=0.0, light=None, dt=9.0):
+        self.sx, self.sy, self.alpha, self.dy, self.light, self.dt = sx, sy, alpha, dy, light, dt
+
+
+def _seed(*v):
+    return (math.sin(sum((i + 1) * 12.9898 * x for i, x in enumerate(v)) + 1.234) * 43758.5453) % 1
+
+
+def _pop(t, born, dur=99.0, seed=0.0):
+    """出现 / 待机 / 退场的动画状态；不在显示期返回 None"""
     if born is None:
-        return 1.0, 1.0, 1.0, 9.0
+        return Anim(light=2.35 + math.sin(t * 0.7) * 0.6)
     dt = t - born
-    if dt < 0 or dt > dur + 0.35:
+    if dt < 0:
         return None
-    return spring(dt), spring(dt - 0.07), 1 - _cl((dt - dur) / 0.35), dt
+    t_exit = min(born + dur, SHOT[1] - EXIT)
+    e = _cl((t - t_exit) / EXIT) if t > t_exit else 0.0
+    if e >= 1:
+        return None
+    grow = 0.55 + 0.45 * spring(dt)
+    grow_y = 0.55 + 0.45 * spring(dt - 0.05)
+    ee = ease_in(e)
+    shrink = 1 - 0.4 * ee
+    alpha = _cl(dt / 0.18) * (1 - ee)
+    bob = math.sin(t * 1.6 + seed * 6.28) * 2.2 * _cl((dt - 0.3) / 0.4)
+    dy = bob - 16 * ee
+    light = 2.35 + math.sin(t * 0.7) * 0.6 + (1 - ease_out(dt / 0.8)) * 2.6     # 出现时高光沿边缘扫过
+    return Anim(grow * shrink, grow_y * shrink, alpha, dy, light, dt)
 
 
 # ---------------- 基础组件 ----------------
 def gchip(t, born, cx, cy, text, col=TXT, size=50, tint=(255, 255, 255), tint_a=0.12, dur=99.0, minw=0, hd=False, refr=1.0):
     """玻璃胶囊标签（cx,cy 为中心）。字色会按玻璃底下的亮度自动变深 / 变浅。"""
-    p = _pop(t, born, dur)
-    if not p:
-        return
-    sx, sy, out, dt = p
-    w = max(minw, tw(text, size) + size * 1.2); h = size * 1.5
     X, Y = (cx, cy) if hd else (cx * S6, cy * S6)
+    a = _pop(t, born, dur, _seed(X, Y))
+    if not a:
+        return
+    w = max(minw, tw(text, size) + size * 1.2); h = size * 1.5
     X = min(max(X, w / 2 + 12), 1920 - w / 2 - 12)
+    Y = Y + a.dy
 
     def f(big):
-        lum = glass(big, X, Y, w / 2 * sx * out, h / 2 * sy * out, t=t, tint=tint, tint_a=tint_a, refr=refr)
-        if dt > 0.08 and out > 0.4:
-            htext(big, X, Y + 2, text, size, ink(col, lum), alpha=_cl((dt - 0.08) / 0.15) * out)
+        lum = glass(big, X, Y, w / 2 * a.sx, h / 2 * a.sy, t=t, tint=tint, tint_a=tint_a, refr=refr, alpha=a.alpha, light=a.light)
+        if a.dt > 0.06:
+            htext(big, X, Y + 2, text, size, ink(col, lum), alpha=_cl((a.dt - 0.06) / 0.16) * a.alpha)
     GL.append(f)
 
 
@@ -67,16 +98,15 @@ def gcard(t, born, cx, cy, hw, hh, r=30, tint=(255, 255, 255), tint_a=0.10, refr
           content=None, sdf=None, dur=99.0, shadow=0.22, alpha=1.0):
     """玻璃卡片 / 任意形状（cx,cy,hw,hh 原生坐标；r 为高清圆角）。
     sdf(HW, HH) -> (px,py)->距离：自定义形状；content(big, X, Y, HW, HH, lum)：在玻璃上画内容（高清坐标）。"""
-    p = _pop(t, born, dur)
-    if not p:
+    a = _pop(t, born, dur, _seed(cx, cy))
+    if not a:
         return
-    sx, sy, out, dt = p
-    X, Y, HW, HH = cx * S6, cy * S6, hw * S6 * sx * out, hh * S6 * sy * out
+    X, Y, HW, HH = cx * S6, cy * S6 + a.dy, hw * S6 * a.sx, hh * S6 * a.sy
 
     def f(big):
         sd = sdf(HW, HH) if sdf else (lambda px, py: sdf_rrect(px, py, HW, HH, r))
-        lum = glass(big, X, Y, HW, HH, sd, t=t, tint=tint, tint_a=tint_a, refr=refr, mag=mag, shadow=shadow, alpha=alpha)
-        if content and dt > 0.1 and out > 0.5:
+        lum = glass(big, X, Y, HW, HH, sd, t=t, tint=tint, tint_a=tint_a, refr=refr, mag=mag, shadow=shadow, alpha=alpha * a.alpha, light=a.light)
+        if content and a.dt > 0.1 and a.alpha > 0.5:
             content(big, X, Y, HW, HH, lum)
     GL.append(f)
 
@@ -115,10 +145,14 @@ def gmove(t, born, a, b, hh=15, tint=(255, 240, 180), tint_a=0.10, mag=0.14):
     """液态选择框：从 a=(x,y,hw) 流到 b=(x,y,hw)，移动中被拉长（选择题、切换选项、高亮某个词）"""
     if t < born:
         return
-    k = spring(t - born)
+    k = spring(t - born, 0.5, 0.82)
     x, y = a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k
-    hw = a[2] + (b[2] - a[2]) * k + abs(b[0] - x) * 0.35
-    gcard(t, None, x, y, hw, hh, r=90, refr=1.3, mag=mag, tint=tint, tint_a=tint_a)
+    v = abs(b[0] - x)
+    hw = a[2] + (b[2] - a[2]) * k + v * 0.35          # 移动中横向拉长
+    hh2 = hh * (1 - min(0.25, v / 400))               # 同时纵向略微压扁，像液体
+    fade = 1 - ease_in(_cl((t - (SHOT[1] - EXIT)) / EXIT))
+    if fade > 0:
+        gcard(t, None, x, y, hw, hh2, r=90, refr=1.3, mag=mag, tint=tint, tint_a=tint_a, alpha=fade)
 
 
 # ---------------- 覆盖 props2 的同名组件（参数兼容）----------------
@@ -128,22 +162,34 @@ def say(img, x, y, s, t=None, born=None, tail='l', cps=16, **kw):
     if born is not None:
         if tt < born:
             return
-        n = max(1, int((tt - born) * cps) + 1)
+        n = min(len(s), max(1, int((tt - born) * cps) + 1))
+        t_char = born + (n - 1) / cps
     else:
-        n, born = len(s), tt - 9
+        n, born, t_char = len(s), tt - 9, tt - 9
+    a = _pop(tt, born, 99.0, _seed(x, y))
+    if not a:
+        return
     cur = s[:n]
     size = 50
-    w = tw(cur, size) + size * 1.2; h = size * 1.5
-    X = min(x * S6 + w / 2, 1920 - w / 2 - 12); Y = y * S6 + h / 2 + 4
-    sx, sy = spring(tt - born), spring(tt - born - 0.07)
+    h = size * 1.5
+    w_now = tw(cur, size) + size * 1.2
+    w_prev = tw(s[:n - 1], size) + size * 1.2 if n > 1 else size * 1.2
+    w = w_prev + (w_now - w_prev) * ease_out((tt - t_char) / 0.12)     # 胶囊跟着打字平滑变长
+    X0 = x * S6
+    X = min(X0 + w / 2, 1920 - w / 2 - 12); Y = y * S6 + h / 2 + 4 + a.dy
     dark = kw.get('os_', False)
+    sep = ease_out((tt - born - 0.12) / 0.5)                            # 尾巴水滴从气泡里分离出来
+    dx = -w / 2 + 26 if tail == 'l' else w / 2 - 26
+    ddy = h / 2 - 8 + 26 * sep
+    rr = 9 + 3 * sep
+    kk = 28 - 24 * sep
+    hw, hh = w / 2 * a.sx, h / 2 * a.sy
 
     def f(big):
-        lum = glass(big, X, Y, w / 2 * sx, h / 2 * sy, t=tt, tint=(40, 36, 70) if dark else (255, 255, 255), tint_a=0.4 if dark else 0.14)
-        dx = -w / 2 + 26 if tail == 'l' else w / 2 - 26
-        rr = 12 * spring(tt - born - 0.15)
-        glass(big, X + dx, Y + h / 2 + 18, rr, rr, t=tt, shadow=0.1)
-        htext(big, X, Y + 2, cur, size, ink(TXT, lum))
+        sd = lambda px, py: sdf_union(sdf_rrect(px, py, hw, hh, hh), sdf_circle(px - dx * a.sx, py - ddy * a.sy, rr * a.sx), k=kk)
+        lum = glass(big, X, Y + 12, hw, hh + 34, lambda px, py: sd(px, py + 12), t=tt, tint=(40, 36, 70) if dark else (255, 255, 255),
+                    tint_a=0.4 if dark else 0.14, alpha=a.alpha, light=a.light, bezel=max(6, hh * 0.5))
+        htext(big, X, Y + 2, cur, size, ink(TXT, lum), alpha=a.alpha)
     GL.append(f)
 
 
@@ -192,17 +238,17 @@ def meter(img, x, y, label, v, col=(255, 70, 110), w=70, show_pct=True, blink=Fa
 
 def gsearch(t, born, cx, cy, hw, query, result='', typed_at=None, qcol=(226, 74, 70)):
     """玻璃搜索框：胶囊从中间拉开 → 打出 query → 结果淡入。cx,cy,hw 原生坐标"""
-    p = _pop(t, born)
-    if not p:
+    a = _pop(t, born, 99.0, _seed(cx, cy))
+    if not a:
         return
-    sx, _, _, dt = p
-    X, Y, HW = cx * S6, cy * S6, hw * S6
+    sx = a.sx
+    X, Y, HW = cx * S6, cy * S6 + a.dy * 0.5, hw * S6
     ta = (born if born is not None else t - 9) + 0.3 if typed_at is None else typed_at
     n = len(query) if t > ta else 0
 
     def f(big):
-        lum = glass(big, X, Y, HW * sx, 56, t=t, tint_a=0.14)
-        if sx < 0.8:
+        lum = glass(big, X, Y, HW * sx, 56 * a.sy, t=t, tint_a=0.14, alpha=a.alpha, light=a.light)
+        if sx < 0.8 or a.alpha < 0.3:
             return
         x0 = X - HW + 40
         dd = ImageDraw.Draw(big)

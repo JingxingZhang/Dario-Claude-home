@@ -336,3 +336,8 @@ def hd_pass(big, img, bgp, t, key):
     lut = LUTS.get(key, LUTS[None])
     out = np.stack([lut[out[..., c], c] for c in range(3)], -1)
     big.paste(Image.fromarray(out))
+
+
+# 光影层改用 skill 内置的 lib/style.py（引擎 MV(hd_light=True) 统一调用），这里只做别名，保证场景函数里的 mark / GRADE 指向同一份
+import style as _LS
+BGSNAP, GRADE, mark, hd_pass = _LS.BGSNAP, _LS.GRADE, _LS.mark, _LS.hd_pass

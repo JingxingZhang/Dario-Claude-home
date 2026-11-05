@@ -1492,34 +1492,7 @@ for i in range(19, 24):
     c = dict(CFG[song.lines[i][2]]); c['pal'] = 'whiteb' if c['pal'] == 'white' else 'white'; CFG[i] = c
 CFG[30] = dict(CFG['你是我的关键词'], size=150, kwscale=1.5)
 
-import glassui as _G
-
-
-class StyledMV(MV):
-    """迭代二：在引擎的玻璃层之前，加景深、轮廓光、光束和调色"""
-    def frame(self, t):
-        _G.CUR[0] = t
-        i = self.shot_at(t)
-        _G.GL.clear(); SB.BGSNAP[0] = None; SB.GRADE[0] = None
-        img = self.compose(t, i)
-        items = list(_G.GL); bgp = SB.BGSNAP[0]; key = SB.GRADE[0]
-        t0 = self.shots[i][0]
-        if i > 0 and t - t0 < 0.16:
-            prev = self.compose(t, i - 1)
-            k = (t - t0) / 0.16
-            m = np.tile(BAYER, (H // 4 + 1, W // 4 + 1))[:H, :W] < k
-            img = Image.fromarray(np.where(m[:, :, None], np.asarray(img), np.asarray(prev)).astype(np.uint8))
-            bgp = None
-        _G.GL.clear()
-        big = img.resize((Z.FW, Z.FH), Image.NEAREST)
-        SB.hd_pass(big, img, bgp, t, key)
-        if self.glass:
-            self.glass_pass(big, t, items)
-        self.overlay(big, t, i)
-        return big
-
-
-MVX = (StyledMV if STYLE >= 2 else MV)(song, SHOTS, CFG, title_style=TITLE_STYLE, lyric_base=LYRIC_BASE, sections=SECTIONS)
+MVX = MV(song, SHOTS, CFG, title_style=TITLE_STYLE, lyric_base=LYRIC_BASE, sections=SECTIONS, hd_light=STYLE >= 2)
 frame = MVX.frame
 DUR = song.dur
 

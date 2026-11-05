@@ -12,6 +12,9 @@ liquid-glass.md（玻璃层）、library-api.md（工具速查）。
   - 画面里的像素字、道具放在 y < 120，底部留给歌词花字和署名。
   - 液态玻璃：调用 glassui 的 gchip / gtag / gcard / gheart / glens / gdrop / bubbles / gmove / gsearch / say / OS / popup / meter
     “登记”玻璃，引擎放大画面后统一画（见 references/liquid-glass.md）。玻璃是“文字和界面”那一层，像素是“世界”那一层。
+    带 born 的玻璃会自动弹出、待机微浮、在镜头结束前自动退场；born=None 是窗、镜面这类结构性玻璃，不做动画。
+  - 迭代二画风（默认）：角色用 refine.render_char，背景用 lib/style.py 的工具；每个户外 / 室内场景画完背景后调用 ST.mark(img)，
+    引擎的高清光影层会让背景轻度虚化、人物锐利并带轮廓光，户外白天加光束，按天空调色（见 references/visual-design.md）。
 """
 import math, os, sys
 SKILL = os.environ.get('PIXMV_SKILL', '')
@@ -23,6 +26,8 @@ from pixlib import *            # draw_text, text_w, dither_grad, draw_sky, draw
 from charkit import *           # pixmap, put, recolor, eyes, mouth, palette_strip —— 设计角色用
 from props2 import *            # ptext, sfx, stamp, sys_msg, cursor, toggle, face …（像素综艺元素与道具）
 from glassui import *           # 液态玻璃组件；同名覆盖 props2 的 say / OS / popup / meter（参数兼容）
+from refine import render_char, refined_sprite   # 迭代二画风：角色精修（Scale2x + 体积光影 + 彩色描边 + 高清五官）
+import style as ST              # 迭代二画风：天空、云、远景城市、树、地面、雪和落叶；ST.mark(img) 登记背景快照
 from chars import heart, sparkle, sweat, burst, dots_bg, concentration, spotlight, curtains, R
 from engine import Song, MV
 import huazi as Z
@@ -58,11 +63,14 @@ CAST = {
 }
 
 
-def actor(img, who, x, y, pose='idle', scale=3, face=1, expr=None, lt=0.0):
-    """画一个角色：x,y 脚底中点。expr 可在这里按设计叠加眼睛嘴巴。"""
+def actor(img, who, x, y, pose='idle', scale=2, face=1, expr='smile', lt=0.0):
+    """画一个角色：x,y 脚底中点。迭代二画风用 render_char（精修 + 高清五官）；
+    字符画里五官留空，在 CAST 里写 eye=(列, 行, 两眼间距)、mth=(列, 行)。"""
     c = CAST[who]
     art = c['art'].get(pose) or c['art']['idle']
-    put(img, pixmap(art, c['pal']), x, y, scale, face)
+    if 'eye' in c:
+        return render_char(img, art, c['pal'], x, y, face, c['eye'], c['mth'], expr)
+    put(img, refined_sprite(art, c['pal']), x, y, 1, face)
 
 
 def CAST_SHEET(img, t):
@@ -79,7 +87,11 @@ def CAST_SHEET(img, t):
 # ======================= ③ 场景与镜头（按 故事.md 的剧情顺序）=======================
 # 场景函数（画背景）可以多次调用；镜头函数（某一句、某个剧情节拍）每个只用一次。
 def bg_placeholder(img, t, k=0.0):
-    img.paste(Image.fromarray(dither_grad(H, W, lerpc(PALETTE['bg'], PALETTE['accent'], k * 0.3), PALETTE['ink'])), (0, 0))
+    """占位背景：迭代二画风的天空 + 远景城市 + 地面。背景画完立刻 ST.mark(img)，引擎据此做景深和轮廓光"""
+    ST.sky(img, t, 'autumn', 0.45 + k * 0.4, 110)
+    ST.city(img, 102, 'autumn', ST.sky_key('autumn', 0.45 + k * 0.4))
+    ST.ground_fill(img, 110, 'autumn', t * 4, 0.45)
+    ST.mark(img)
 
 
 def s_title(img, t, lt, v):
@@ -120,7 +132,7 @@ SECTIONS = []
 # pal 底色 / kw 重点词 / kwpal 重点词配色（可为列表）/ kwscale / size / cx cy / angle / deco 贴纸 / pop stagger shake …
 CFG = {}
 
-MVX = MV(song, SHOTS, CFG, title_style=TITLE_STYLE, lyric_base=LYRIC_BASE, sections=SECTIONS)
+MVX = MV(song, SHOTS, CFG, title_style=TITLE_STYLE, lyric_base=LYRIC_BASE, sections=SECTIONS)   # hd_light / glass 默认开启
 frame = MVX.frame
 DUR = song.dur
 

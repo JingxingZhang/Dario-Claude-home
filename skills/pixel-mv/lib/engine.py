@@ -4,8 +4,11 @@
   - img：320×180 原生画布；t：全片秒；lt：本镜头开始后的秒（所有动作都按 lt 编排，重复段直接复用）
   - v：传给镜头函数的任意参数（例如这段剧情的状态、配色名）。旧版的 'replay' 回放模式仍兼容，但新流程不再使用：
     重复的歌词也要画新的剧情，不复用镜头（见 references/story-design.md）。
-液态玻璃（默认开启）：镜头函数里调用 glassui 的 g* 组件登记玻璃，frame() 放大画面后统一画；
-另外自动加：整帧柔光 + 暗角、歌词底部玻璃托盘、署名玻璃胶囊、段落切换处的玻璃透镜横扫（sections）。
+画风（迭代二，默认开启）：
+  hd_light：高清光影层（lib/style.py）——场景函数画完背景时调用 style.mark(img)，引擎据此把背景轻度虚化、前景保持锐利，
+            给前景加轮廓光，户外白天加光束，按天空键调色；
+  glass：液态玻璃层——镜头函数里调用 glassui 的 g* 组件登记玻璃，frame() 放大画面后统一画；
+         另外自动加：整帧柔光 + 暗角、歌词底部玻璃托盘（随歌词连续变形）、署名玻璃胶囊、段落切换处的玻璃透镜横扫（sections）。
 """
 import json, math, os
 import numpy as np
@@ -13,7 +16,8 @@ from PIL import Image
 from pixlib import W, H, INK, BAYER, seg, ease, lerp
 import huazi as Z
 import glassui as G
-from glass import glass as _glass, post as _post, spring as _spring
+import style as ST
+from glass import glass as _glass, post as _post, spring as _spring, sdf_ellipse as _sdf_ellipse
 
 
 class Song:
@@ -76,12 +80,12 @@ def build_lyrics(song, cfg, base=None):
 
 class MV:
     def __init__(self, song, shots, cfg, danmu=None, title_style=None, replay_label='回放 REPLAY', tag='像素 MV', lyric_base=None,
-                 glass=True, lyric_dock=True, sections=None, post_fx=True):
+                 glass=True, lyric_dock=True, sections=None, post_fx=True, hd_light=True):
         """lyric_base：全曲歌词花字的基调（按曲风定），如 dict(pop=1.08, stagger=0.09, float_amp=3) 抒情、dict(pop=1.45, stagger=0.03, shake=5) 燃。
         title_style：片头片尾歌名的样式（pal/size/angle/deco/pop…）。
         glass：是否画液态玻璃层（关掉就是纯像素版）；lyric_dock：歌词底下的玻璃托盘；post_fx：整帧柔光 + 暗角；
         sections：段落切换时刻列表（全片秒），每处有一颗大玻璃透镜横扫画面，通常是主歌、副歌、间奏、桥段、尾奏的起点。"""
-        self.glass, self.lyric_dock, self.post_fx = glass, lyric_dock, post_fx
+        self.glass, self.lyric_dock, self.post_fx, self.hd_light = glass, lyric_dock, post_fx, hd_light
         self.sections = list(sections or [])
         self.song = song
         self.shots = shots
@@ -125,21 +129,59 @@ class MV:
     def frame(self, t):
         G.CUR[0] = t
         i = self.shot_at(t)
-        G.GL.clear()
-        img = self.compose(t, i)
-        items = list(G.GL)
         t0 = self.shots[i][0]
+        G.SHOT[0], G.SHOT[1] = t0, (self.shots[i + 1][0] if i + 1 < len(self.shots) else self.song.dur + 1)
+        G.GL.clear(); ST.BGSNAP[0] = None; ST.GRADE[0] = None
+        img = self.compose(t, i)
+        items = list(G.GL); bgp = ST.BGSNAP[0]; key = ST.GRADE[0]
         if i > 0 and t - t0 < 0.16:  # 像素抖动溶解转场
             prev = self.compose(t, i - 1)
             k = (t - t0) / 0.16
             m = np.tile(BAYER, (H // 4 + 1, W // 4 + 1))[:H, :W] < k
             img = Image.fromarray(np.where(m[:, :, None], np.asarray(img), np.asarray(prev)).astype(np.uint8))
+            bgp = None
         G.GL.clear()
         big = img.resize((Z.FW, Z.FH), Image.NEAREST)
+        if self.hd_light:
+            ST.hd_pass(big, img, bgp, t, key)
         if self.glass:
             self.glass_pass(big, t, items)
         self.overlay(big, t, i)
         return big
+
+    def _dock_rect(self, L_):
+        x0, y0, x1, y1 = L_.bbox
+        return (x0 + x1) / 2, (y0 + y1) / 2 + 4, (x1 - x0) / 2 + 30, (y1 - y0) / 2 + 6
+
+    def dock(self, t):
+        """歌词托盘：相邻两句间隔短时，托盘从上一句的形状连续变形到下一句；间隔长才收起再弹出"""
+        Ls = self.lyrics
+        GAP = 0.9
+        cur = None
+        for j, L_ in enumerate(Ls):
+            if L_.t0 - 0.15 <= t:
+                cur = j
+        if cur is None:
+            return None
+        L_ = Ls[cur]
+        nxt = Ls[cur + 1] if cur + 1 < len(Ls) else None
+        hold = nxt is not None and nxt.t0 - L_.t1 < GAP
+        if t > L_.t1 + 0.1 and not hold:
+            k = 1 - (t - L_.t1 - 0.1) / 0.3
+            if k <= 0:
+                return None
+            cx, cy, hw, hh = self._dock_rect(L_)
+            return cx, cy, hw * (0.6 + 0.4 * k), hh * (0.6 + 0.4 * k), k
+        cx, cy, hw, hh = self._dock_rect(L_)
+        dt = t - (L_.t0 - 0.15)
+        prv = Ls[cur - 1] if cur > 0 else None
+        if prv is not None and L_.t0 - prv.t1 < GAP:
+            px, py, pw, ph = self._dock_rect(prv)
+            k = _spring(dt, 0.45, 0.8)
+            k2 = _spring(dt - 0.04, 0.45, 0.8)
+            return px + (cx - px) * k, py + (cy - py) * k, pw + (hw - pw) * k, ph + (hh - ph) * k2, 1.0
+        k = _spring(dt); k2 = _spring(dt - 0.05)
+        return cx, cy, hw * (0.55 + 0.45 * k), hh * (0.55 + 0.45 * k2), min(1.0, dt / 0.18)
 
     def glass_pass(self, big, t, items):
         """高清玻璃层：柔光暗角 → 镜头登记的玻璃 → 段落透镜横扫 → 歌词托盘 → 署名胶囊"""
@@ -147,19 +189,19 @@ class MV:
             _post(big)
         for f in items:
             f(big)
-        for ts in self.sections:
-            if ts - 0.3 < t < ts + 0.4:
-                k = (t - ts + 0.3) / 0.7
-                _glass(big, lerp(-320, 2240, ease(k)), 470, 250, 250, t=t, refr=1.6, mag=0.22, bezel=90, tint_a=0.04, shadow=0.12)
+        for ts in self.sections:                       # 段落透镜：沿运动方向拉长、两端放慢
+            if ts - 0.35 < t < ts + 0.45:
+                k = (t - ts + 0.35) / 0.8
+                e = 0.5 - 0.5 * math.cos(math.pi * k)
+                v = math.sin(math.pi * k)
+                a_, b_ = 250 * (1 + 0.35 * v), 250 * (1 - 0.12 * v)
+                _glass(big, lerp(-340, 2260, e), 470, a_, b_, lambda px, py: _sdf_ellipse(px, py, a_, b_), t=t,
+                       refr=1.6, mag=0.22, bezel=90, tint_a=0.04, shadow=0.12, light=2.35 + k * 1.5)
         if self.lyric_dock:
-            for L_ in self.lyrics:
-                if L_.t0 - 0.1 <= t <= L_.t1 + 0.1:
-                    x0, y0, x1, y1 = L_.bbox
-                    dt = t - (L_.t0 - 0.12)
-                    out = 1 - min(1.0, max(0.0, (t - L_.t1) / 0.2))
-                    hw = ((x1 - x0) / 2 + 30) * _spring(dt) * out
-                    hh = ((y1 - y0) / 2 + 6) * _spring(dt - 0.06) * out
-                    _glass(big, (x0 + x1) / 2, (y0 + y1) / 2 + 4, hw, hh, t=t, refr=0.9, mag=0.03, tint_a=0.10, shadow=0.16)
+            r = self.dock(t)
+            if r:
+                cx, cy, hw, hh, al = r
+                _glass(big, cx, cy, hw, hh, t=t, refr=0.9, mag=0.03, tint_a=0.10, shadow=0.16, alpha=al)
         if self.signature:
             sg = Z.signature(self.signature)
             _glass(big, 960, Z.FH - sg.height / 2 - 6, sg.width / 2 - 6, sg.height / 2 - 8, t=t, refr=0.8, tint_a=0.12, shadow=0.1)

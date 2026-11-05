@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """渲染成片：并行出帧 → H.264 → 配原曲 → 体积不超过上限（默认 100 MB）。
-  python3 render.py 项目目录 [--from 秒 --to 秒] [--draft] [--max-mb 100] [--workers 4] [--out 文件.mp4]
+  python3 render.py 项目目录 [--from 秒 --to 秒] [--draft] [--max-mb 100] [--workers 4] [--fps 30|60] [--out 文件.mp4]
+--fps 60：动效（玻璃弹簧、托盘变形、透镜）更顺滑，渲染时间约翻倍。
 音轨取 project.json 里的 audio（原曲 mp3/mp4/wav）。先按 CRF 18 + 码率封顶编码；万一仍超限，自动两遍编码压到上限的 94%。"""
 import argparse, json, math, os, subprocess, sys, tempfile, time
 from multiprocessing import Process
@@ -8,11 +9,11 @@ from multiprocessing import Process
 ap = argparse.ArgumentParser()
 ap.add_argument('project'); ap.add_argument('--from', dest='t0', type=float, default=0); ap.add_argument('--to', dest='t1', type=float, default=None)
 ap.add_argument('--draft', action='store_true'); ap.add_argument('--max-mb', type=float, default=100); ap.add_argument('--workers', type=int, default=4)
-ap.add_argument('--out', default=None)
+ap.add_argument('--out', default=None); ap.add_argument('--fps', type=int, default=30)
 A = ap.parse_args()
 PROJ = os.path.abspath(A.project)
 pj = json.load(open(os.path.join(PROJ, 'project.json'), encoding='utf-8'))
-FPS = 30
+FPS = A.fps
 
 
 def work(i, f0, f1, path):
