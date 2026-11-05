@@ -28,6 +28,156 @@ TITLE_STYLE = dict(pal='yel', size=230, angle=-3, deco=('note', 'star'))
 sys.path.insert(0, ROOT)
 from cast import me, you, leaf, ME_PAL, YOU_PAL, LEAF_PAL, GOLD, GOLD_D, SCARF, INK
 
+# ======================= 液态玻璃层（1080p 高清，见 glass.py）=======================
+# 像素世界保持原样；UI、标签、气泡、选择框、镜面、转场换成会折射背景的液态玻璃。
+# 镜头函数里调用 gchip / gcard / glens …… 只是“登记”，高清阶段（GlassMV.frame）统一画在放大后的帧上。
+from glass import glass, spring, sdf_rrect, sdf_heart, htext, tw, post, ink
+GL = []
+CUR = [0.0]
+S6 = 6
+TXT = (40, 32, 56)
+PALC = {'yel': (190, 124, 16), 'pink': (222, 60, 84), 'cyan': (24, 126, 186), 'red': (220, 50, 60),
+        'white': (60, 50, 80), 'purp': (130, 70, 190), 'green': (40, 150, 90)}
+TINTC = {'yel': (255, 214, 110), 'pink': (255, 170, 190), 'cyan': (150, 210, 255), 'red': (255, 160, 160),
+         'white': (255, 255, 255), 'purp': (210, 180, 255), 'green': (170, 240, 200)}
+
+
+def _pop(t, born, dur=99.0):
+    if born <= -5:          # 常驻：不做出现动画
+        return 1.0, 1.0, 1.0, 9.0
+    dt = t - born
+    if dt < 0 or dt > dur + 0.35:
+        return None
+    return spring(dt), spring(dt - 0.07), 1 - clamp((dt - dur) / 0.35), dt
+
+
+def gchip(t, born, cx, cy, text, col=TXT, size=50, tint=(255, 255, 255), tint_a=0.12, dur=99.0, minw=0, hd=False, refr=1.0):
+    """玻璃胶囊标签（cx,cy 原生坐标中心）：出现时先横向、再纵向回弹"""
+    p = _pop(t, born, dur)
+    if not p:
+        return
+    sx, sy, out, dt = p
+    w = max(minw, tw(text, size) + size * 1.2); h = size * 1.5
+    X, Y = (cx, cy) if hd else (cx * S6, cy * S6)
+    X = min(max(X, w / 2 + 12), 1920 - w / 2 - 12)
+
+    def f(big):
+        lum = glass(big, X, Y, w / 2 * sx * out, h / 2 * sy * out, t=t, tint=tint, tint_a=tint_a, refr=refr)
+        if dt > 0.08 and out > 0.4:
+            htext(big, X, Y + 2, text, size, ink(col, lum), alpha=clamp((dt - 0.08) / 0.15) * out)
+    GL.append(f)
+
+
+def gcard(t, born, cx, cy, hw, hh, r=30, tint=(255, 255, 255), tint_a=0.10, refr=1.0, mag=0.05, content=None, sdf=None, dur=99.0, shadow=0.22, alpha=1.0):
+    """玻璃卡片 / 任意形状玻璃（cx,cy,hw,hh 均为原生坐标）"""
+    p = _pop(t, born, dur)
+    if not p:
+        return
+    sx, sy, out, dt = p
+    X, Y, HW, HH = cx * S6, cy * S6, hw * S6 * sx * out, hh * S6 * sy * out
+
+    def f(big):
+        sd = sdf(HW, HH) if sdf else (lambda px, py: sdf_rrect(px, py, HW, HH, r))
+        lum = glass(big, X, Y, HW, HH, sd, t=t, tint=tint, tint_a=tint_a, refr=refr, mag=mag, shadow=shadow, alpha=alpha)
+        if content and dt > 0.1 and out > 0.5:
+            content(big, X, Y, HW, HH, lum)
+    GL.append(f)
+
+
+def glens(t, cx, cy, r, refr=1.2, mag=0.12, tint=(255, 255, 255), tint_a=0.04, alpha=1.0, shadow=0.12, hd=False):
+    """圆形玻璃透镜 / 水滴"""
+    X, Y, RR = (cx, cy, r) if hd else (cx * S6, cy * S6, r * S6)
+    GL.append(lambda big: glass(big, X, Y, RR, RR, t=t, refr=refr, mag=mag, tint=tint, tint_a=tint_a, alpha=alpha, shadow=shadow))
+
+
+def bubbles(t, n=4, seed=0, x0=0, x1=320, y0=0, y1=120, r0=4, r1=8, speed=6.0):
+    """缓缓上浮的玻璃水滴（氛围）"""
+    for i in range(n):
+        ph = (t * speed / (y1 - y0 + 20) + hsh(i, seed, 1)) % 1
+        x = x0 + hsh(i, seed, 2) * (x1 - x0) + math.sin(t * 0.9 + i * 2) * 6
+        y = y1 + 10 - ph * (y1 - y0 + 20)
+        r = r0 + hsh(i, seed, 3) * (r1 - r0)
+        a = clamp(min(ph / 0.15, (1 - ph) / 0.15))
+        glens(t, x, y, r, 1.3, 0.18, alpha=a, shadow=0.08)
+
+
+def say(img, x, y, s, t=None, born=None, tail='l', cps=16, **kw):
+    """说话气泡 → 玻璃胶囊 + 一颗分离出来的小水滴当尾巴；打字时胶囊跟着字变长"""
+    tt = CUR[0] if t is None else t
+    if born is not None:
+        if tt < born:
+            return
+        n = max(1, int((tt - born) * cps) + 1)
+    else:
+        n, born = len(s), tt - 9
+    cur = s[:n]
+    size = 50
+    w = tw(cur, size) + size * 1.2; h = size * 1.5
+    X = min(x * S6 + w / 2, 1920 - w / 2 - 12); Y = y * S6 + h / 2 + 4
+    sx, sy = spring(tt - born), spring(tt - born - 0.07)
+
+    def f(big):
+        lum = glass(big, X, Y, w / 2 * sx, h / 2 * sy, t=tt, tint_a=0.14)
+        dx = -w / 2 + 26 if tail == 'l' else w / 2 - 26
+        rr = 12 * spring(tt - born - 0.15)
+        glass(big, X + dx, Y + h / 2 + 18, rr, rr, t=tt, shadow=0.1)
+        htext(big, X, Y + 2, cur, size, ink(TXT, lum))
+    GL.append(f)
+
+
+def OS(img, x, y, s, t, born):
+    say(img, x, y, 'OS：' + s, t, born)
+
+
+_leaf_px = leaf
+
+
+def leaf(img, cx, cy, expr='happy', scale=2, ang=0.0, pal=None, sign=None, arms=False):
+    """小杏；举牌改成头顶一枚玻璃小牌"""
+    _leaf_px(img, cx, cy, expr, scale, ang, pal, None)
+    if sign is not None:
+        gchip(CUR[0], -9, cx, cy - 9 * scale - 6, sign.strip('　 '), size=42, minw=160)
+
+
+def popup(img, x, y, title, msg, btns=('确定',), sel=0, pressed=False, w=150, born=None):
+    """系统弹窗 → 玻璃提示卡"""
+    tt = CUR[0]
+    b = tt - 9 if born is None else born
+    hw, hh = w / 2, 30
+
+    def content(big, X, Y, HW, HH, lum):
+        htext(big, X, Y - 100, title, 38, ink((110, 100, 130), lum))
+        htext(big, X, Y - 22, msg, 66, ink(TXT, lum))
+        bw = 180
+        l2 = glass(big, X, Y + 92, bw / 2 * (0.94 if pressed else 1), 34, t=tt, tint=(120, 170, 255), tint_a=0.3)
+        htext(big, X, Y + 94, btns[0], 44, ink((30, 90, 200), l2))
+    gcard(tt, b, x + hw, y + hh, hw, hh, r=40, content=content, tint_a=0.22)
+
+
+def meter(img, x, y, label, v, col=(255, 70, 110), w=70, show_pct=True, blink=False):
+    """数值条 → 玻璃胶囊，里面是一段会涨的液体"""
+    tt = CUR[0]
+    X0 = x * S6
+    lw = tw(label, 46)
+    Wd = lw + w * S6 * 0.9 + 190
+    X, Y = X0 + Wd / 2, y * S6 + 52
+
+    def f(big):
+        lum = glass(big, X, Y, Wd / 2, 50, t=tt, tint_a=0.14)
+        htext(big, X0 + 34, Y + 2, label, 46, ink(TXT, lum), anchor='l')
+        tx0, tx1 = X0 + 50 + lw, X0 + Wd - 110
+        dd = ImageDraw.Draw(big)
+        dd.rounded_rectangle([tx0, Y - 12, tx1, Y + 12], 12, fill=(210, 206, 220))
+        fx = tx0 + (tx1 - tx0) * clamp(v)
+        if fx > tx0 + 24:
+            dd.rounded_rectangle([tx0, Y - 12, fx, Y + 12], 12, fill=col)
+            dd.rounded_rectangle([tx0 + 6, Y - 9, fx - 6, Y - 5], 3, fill=lerpc(col, (255, 255, 255), 0.5))
+        if show_pct:
+            htext(big, X0 + Wd - 66, Y + 2, f'{int(round(v * 100))}%', 42, ink(TXT, lum))
+    GL.append(f)
+
+
+
 
 def CAST_SHEET(img, t):
     d = ImageDraw.Draw(img)
@@ -259,16 +409,15 @@ def board(img, t, chalk_lines=()):
         draw_text(img, x, y, s, col, sc)
 
 
-def nametag(img, cx, cy, who='me', glowk=0.0, scale=1):
+def nametag(img, cx, cy, who='me', glowk=0.0, scale=1, born=-9):
     """名字牌：只画小头像，不编真实名字"""
-    d = ImageDraw.Draw(img)
     w, h = 22 * scale, 20 * scale
     x0, y0 = cx - w // 2, cy - h // 2
     if glowk > 0:
         glow(img, cx, cy, 26 * scale, (255, 236, 160), 0.5 * glowk)
-        d = ImageDraw.Draw(img)
-    R(d, x0, y0, w, h, WHITE)
-    d.rectangle([x0, y0, x0 + w - 1, y0 + h - 1], outline=SCARF, width=max(1, scale))
+    d = ImageDraw.Draw(img)
+    R(d, x0 + 2, y0 + 2, w - 4, h - 4, (255, 246, 236))
+    gcard(CUR[0], born, cx, cy, w / 2, h / 2, r=26, tint=(255, 190, 180) if who == 'you' else (255, 236, 170), tint_a=0.14 + 0.1 * glowk, refr=0.8, mag=0.02)
     from cast import ME_HEAD, YOU_HEAD
     spr = pixmap(ME_HEAD if who == 'me' else YOU_HEAD, ME_PAL if who == 'me' else YOU_PAL)
     put(img, spr, cx, y0 + h - 2 * scale, scale)
@@ -276,9 +425,7 @@ def nametag(img, cx, cy, who='me', glowk=0.0, scale=1):
 
 def tag(img, x, y, s, col, t, born):
     """语法标签【××】"""
-    if t < born:
-        return
-    sfx(img, x, y, '【' + s + '】', t, born, 99, col, 1, jitter=0)
+    gchip(t, born, x, y, s, PALC.get(col, TXT), 54, TINTC.get(col, (255, 255, 255)), 0.16)
 
 
 def falling_leaf(img, t, born, x0, y0, x1, y1, dur, expr='happy', scale=2):
@@ -298,6 +445,8 @@ def falling_leaf(img, t, born, x0, y0, x1, y1, dur, expr='happy', scale=2):
 def s_title(img, t, lt, v):
     """前奏：深夜书桌，银杏叶从窗外飘进来，落在空白笔记本上"""
     room(img, t, 1.0)
+    gcard(t, -9, 57, 44, 43, 34, r=18, refr=0.7, mag=0.03, tint=(190, 210, 255), tint_a=0.06, shadow=0.0)
+    bubbles(t, 5, 1, 110, 320, 10, 96, 3, 7, 5.0)
     awake = lt > 10.0
     me(img, 250, 100, 'desk', 'shock' if 10.0 < lt < 10.9 else ('smile' if awake else 'stuck'), 2)
     notebook_open(img, 250, 94)
@@ -334,6 +483,7 @@ def s_mirror(img, t, lt, v):
     mk = Image.new('L', (W, H), 0)
     ImageDraw.Draw(mk).ellipse([cx - r, cy - r, cx + r, cy + r], fill=255)
     img.paste(mirror, (0, 0), mk)
+    gcard(t, -9, cx, cy, r, r, r=r * S6, refr=0.9, mag=0.04, tint=(200, 235, 255), tint_a=0.08)
     # 便利贴
     R(d, cx + 18, cy - 46, 40, 22, (255, 232, 120)); d.rectangle([cx + 18, cy - 46, cx + 57, cy - 25], outline=GOLD_D)
     draw_text(img, cx + 20, cy - 44, '好好', INK); draw_text(img, cx + 20, cy - 33, '爱自己', INK)
@@ -389,7 +539,7 @@ def s_dict(img, t, lt, v):
         disc(d, x, y, 4, WHITE); d.point((x - 1, y), fill=(180, 180, 190)); d.point((x + 1, y + 1), fill=(180, 180, 190))
     leaf(img, 236, 94, 'shock' if lt > 1.0 else 'happy', 1)
     if lt > 1.0:
-        popup(img, 178, 6, '词典', '查无此词', ('确定',), 0, lt > 2.0, w=132)
+        popup(img, 178, 6, '词典', '查无此词', ('确定',), 0, lt > 2.0, w=132, born=t - lt + 1.0)
 
 
 def bench_scene(img, t, lt, v):
@@ -416,7 +566,7 @@ def s_bench(img, t, lt, v):
     d = ImageDraw.Draw(img)
     # 激情水位计
     x0, y0, hgt = 268, 14, 80
-    R(d, x0 - 1, y0 - 1, 18, hgt + 2, INK); R(d, x0, y0, 16, hgt, (230, 236, 246))
+    R(d, x0, y0, 16, hgt, (226, 230, 244))
     lv = ease(seg(lt, 0.2, 2.8)) * 1.04
     wy = y0 + hgt - int(hgt * min(1, lv))
     R(d, x0, wy, 16, y0 + hgt - wy, (250, 110, 140))
@@ -424,6 +574,7 @@ def s_bench(img, t, lt, v):
         d.point((x0 + i + int(t * 8) % 4, wy), fill=WHITE)
     wl = y0 + 18
     d.line([(x0 - 4, wl), (x0 + 20, wl)], fill=(230, 40, 60))
+    gcard(t, t - lt, x0 + 8, y0 + hgt / 2, 10, hgt / 2 + 2, r=60, refr=1.2, mag=0.06, tint_a=0.06)
     draw_text(img, x0 - 40, wl - 6, '警戒线', (230, 40, 60), outline=WHITE)
     draw_text(img, x0 - 10, y0 + hgt + 3, '激情', INK, outline=WHITE)
     if lv > 0.78:
@@ -469,8 +620,8 @@ def s_name(img, t, lt, v):
     fl = lt < land
     you_on(img, t, 222, 120, 'call', 'happy', -1)
     if lt > 0.3:
-        bubble_box(img, 186, 22, 38, 30, WHITE, INK, 'r')
-        nametag(img, 205, 37, 'me')
+        nametag(img, 205, 37, 'me', born=t - lt + 0.3, scale=1)
+        glens(t, 220, 54, 2 * spring(lt - 0.5), 1.0, 0.1)
     if fl:
         me_on(img, t, 110, 120, 'idle', 'shock' if lt > 0.6 else 'smile', 1, force=True)
     else:
@@ -545,6 +696,9 @@ yyyyyyy
 ...t...
 ''', {'y': g, 't': gd})
         put(img, spr, int(lx), int(ly) + 3, 2, 1)
+        if k >= 1 and lt - born - 0.9 < 0.7:
+            dd_ = lt - born - 0.9
+            glens(t, x, y, 9 * spring(dd_) , 1.4, 0.2, alpha=1 - clamp((dd_ - 0.35) / 0.35))
         if k >= 1 and lt - born - 0.9 < 0.5:
             sfx(img, x, y - 16, '♪', t, t - lt + born + 0.9, 0.5, 'yel', 1, jitter=0)
     # 远处两个人的身影（右上）
@@ -654,16 +808,26 @@ def scribble_rows(img, rows, col=(120, 120, 150), seed=0, skip=()):
 
 
 def searchbar(img, t, lt, q, born, res):
-    d = ImageDraw.Draw(img)
-    R(d, 44, 4, 252, 16, WHITE); d.rectangle([44, 4, 295, 19], outline=INK)
-    from chars import magnifier
-    magnifier(img, 48, 6, 4)
+    """玻璃搜索框：胶囊从中间拉开，输入“你”，结果从右侧淡入"""
     n = len(q) if lt > born else 0
-    draw_text(img, 64, 6, q[:n], SCARF)
-    if int(lt * 2) % 2 and lt < born + 0.6:
-        R(d, 64 + text_w(q[:n]), 6, 1, 11, INK)
-    if lt > born + 0.6:
-        draw_text(img, 291 - text_w(res), 6, res, (120, 120, 140))
+    sx = spring(lt + 0.4)
+    X, Y, HW = 170 * S6, 13 * S6, 128 * S6
+
+    def f(big):
+        glass(big, X, Y, HW * sx, 56, t=t, tint_a=0.14)
+        if sx < 0.8:
+            return
+        x0 = X - HW + 40
+        dd = ImageDraw.Draw(big)
+        dd.ellipse([x0, Y - 20, x0 + 30, Y + 10], outline=(120, 110, 140), width=5)
+        dd.line([(x0 + 26, Y + 6), (x0 + 40, Y + 20)], fill=(120, 110, 140), width=6)
+        htext(big, x0 + 64, Y + 2, q[:n], 46, SCARF, anchor='l')
+        if int(lt * 2) % 2 and lt < born + 0.6:
+            cx_ = x0 + 64 + tw(q[:n], 46) + 6
+            dd.rounded_rectangle([cx_, Y - 24, cx_ + 4, Y + 24], 2, fill=(40, 120, 255))
+        if lt > born + 0.6:
+            htext(big, X + HW - 40 - tw(res, 36), Y + 2, res, 36, (110, 100, 130), anchor='l', alpha=clamp((lt - born - 0.6) / 0.3))
+    GL.append(f)
 
 
 def s_keyword(img, t, lt, v):
@@ -757,8 +921,13 @@ def s_board_ab(img, t, lt, v):
     board(img, t, [(120, 14, '爱 = ？', CHALK, 2), (60, 46, 'A. 动词', CHALK, 2), (180, 46, 'B. 名词', CHALK, 2)])
     d = ImageDraw.Draw(img)
     pick = int(lt * 2.2) % 2
-    x = 60 if pick == 0 else 180
-    d.rectangle([x - 4, 44, x + 74, 74], outline=(255, 230, 120))
+    xa, xb = 96, 216
+    since = (lt * 2.2 - int(lt * 2.2)) / 2.2
+    cur, prv = (xa, xb) if pick == 0 else (xb, xa)
+    if lt < 1 / 2.2:
+        prv = cur
+    xs = lerp(prv, cur, spring(since))
+    gcard(t, t - lt, xs, 60, 44 + abs(cur - xs) * 0.35, 15, r=90, refr=1.3, mag=0.14, tint=(255, 240, 180), tint_a=0.10)
     me_on(img, t, 250, 124, 'give', 'stuck', -1, force=False)
     _teacher(img, 58, 112, 'side', 'A？' if pick == 0 else 'B？')
 
@@ -783,8 +952,8 @@ def s_forget(img, t, lt, v):
     me_on(img, t, 130, 120, 'hold', 'stuck' if lt > 0.4 else 'blush', 1, force=False)
     d = ImageDraw.Draw(img)
     if lt > 0.4:
-        R(d, 116, 20, 28, 20, WHITE); d.rectangle([116, 20, 143, 39], outline=INK)
-        sfx(img, 130, 10, '忘词了！', t, t - lt + 0.5, 99, 'cyan', 1)
+        gcard(t, t - lt + 0.4, 100, 34, 16, 12, r=24, tint_a=0.2)
+        sfx(img, 100, 14, '忘词了！', t, t - lt + 0.5, 99, 'cyan', 1)
     leaf(img, 70, 110, 'shock', 2, sign='　　　' if lt > 0.4 else '我……喜欢……')
 
 
@@ -794,7 +963,7 @@ def s_split(img, t, lt, v):
     avenue(a, t, 0.45, 200, fall=0.5); avenue(b, t, 0.82, 260, fall=0.5)
     img.paste(a.crop((0, 0, 158, H)), (0, 0)); img.paste(b.crop((162, 0, W, H)), (162, 0))
     d = ImageDraw.Draw(img)
-    R(d, 158, 0, 4, H, WHITE)
+    gcard(t, -9, 160, 60, 4, 64, r=24, refr=1.4, mag=0.0, tint_a=0.08)
     k = ease(seg(lt, 0.2, 1.6))
     me_on(img, t, int(lerp(30, 64, k)), 120, 'walk1' if k < 1 and int(lt * 4) % 2 else 'idle', 'happy', 1, force=False)
     you_on(img, t, int(lerp(130, 96, k)), 120, 'walk2' if k < 1 and int(lt * 4) % 2 else 'idle', 'happy', -1)
@@ -817,7 +986,7 @@ def s_subtext(img, t, lt, v):
     me_on(img, t, 120, 120 - (1 if int(lt * 3) % 2 else 0), 'idle', 'smile' if lt < 1.0 else 'happy', 1, force=False)
     say(img, 176, 30, '我先走啦~', t, t - lt + 0.1, tail='r')
     if lt > 0.8:
-        draw_text(img, 162, 50, '（潜台词：明天见）', (120, 110, 140), outline=WHITE)
+        gchip(t, t - lt + 0.8, 222, 58, '潜台词：明天见', (250, 246, 255), 38, (40, 36, 70), 0.42)
     leaf(img, 64, 112, 'happy', 2, sign='我懂' if lt > 1.2 else None)
 
 
@@ -828,10 +997,10 @@ def s_heartname(img, t, lt, v):
     me_on(img, t, 120, 120, 'idle', 'heart' if lt > 1.5 else 'smile', 1, force=False)
     k = ease(seg(lt, 0.3, 1.2))
     if k > 0:
-        hk = max(1, int(round(6 * k)))
-        heart(img, 166, 44, hk)
+        gcard(t, t - lt + 0.3, 166, 44, 26, 26, sdf=lambda HW, HH: (lambda px, py: sdf_heart(px, py, HW * 1.55)),
+              tint=(255, 120, 150), tint_a=0.22, refr=1.3, mag=0.08)
         if k >= 1:
-            nametag(img, 166, 46, 'me', glowk=0.5 + 0.5 * math.sin(lt * 4) ** 2)
+            nametag(img, 166, 46, 'me', glowk=0.5 + 0.5 * math.sin(lt * 4) ** 2, born=t - lt + 1.2)
         d = ImageDraw.Draw(img)
         d.line([(196, 82), (180, 64)], fill=WHITE)
     stamp(img, 50, 30, '踏实', t, t - lt + 2.0, GOLD_D)
@@ -870,8 +1039,10 @@ def s_acrostic(img, t, lt, v):
             x += w + 6
     if on > 0:
         leaf(img, 26, 15 + (on - 1) * 14, 'happy', 1)
+        step = (lt - 0.3) / (3.9 / 7.999) - (on - 1)
+        hh_ = ((on - 1) * 14 + 14 * clamp(spring(step / 2))) / 2 + 2
+        gcard(t, t - lt + 0.3, 47.5, 7 + hh_, 9, hh_, r=48, refr=1.3, mag=0.12, tint=(255, 230, 150), tint_a=0.10)
     if lt > 4.4:
-        d.rectangle([38, 7, 56, 108], outline=SCARF, width=2)
         sfx(img, 200, 112 - 8, '藏头', t, t - lt + 4.4, 99, 'pink', 1)
 
 
@@ -884,10 +1055,13 @@ def s_answer(img, t, lt, v):
     if m > 0:
         draw_text(img, 112, 40, s[:m], (255, 230, 120), 2)
     d = ImageDraw.Draw(img)
+    if lt > 0.6:
+        sk = spring(lt - 0.6)
+        gcard(t, t - lt + 0.6, lerp(64, 172, sk), lerp(58, 52, sk), lerp(26, 64, sk), 14, r=90, refr=1.3, mag=0.12, tint=(255, 240, 180), tint_a=0.10)
     if lt > 1.0:
         stamp(img, 270, 44, '对', t, t - lt + 1.0, (60, 170, 90), 99, 2)
     if lt > 1.5:
-        nametag(img, 160, 76, 'you', glowk=0.3)
+        nametag(img, 160, 76, 'you', glowk=0.3, born=t - lt + 1.5)
         wk = seg(lt, 1.6, 2.2)
         d = ImageDraw.Draw(img)
         d.line([(146, 89), (146 + int(28 * wk), 89)], fill=CHALK, width=2)
@@ -912,8 +1086,7 @@ def s_road(img, t, lt, v):
         if bk >= 1:
             sparkle(img, 92, 8, 2)
     leaf(img, 60, 34, 'shock' if 2.2 < lt < 3.6 else 'happy', 1)
-    R(d, 220, 4, 96, 16, PAPER); d.rectangle([220, 4, 315, 19], outline=INK)
-    draw_text(img, 225, 6, '第1页·未完待续', INK)
+    gchip(t, t - lt + 0.3, 262, 14, '第1页 · 未完待续', TXT, 44)
 
 
 def s_give(img, t, lt, v):
@@ -944,6 +1117,7 @@ def s_outro(img, t, lt, v):
     me_on(img, t, x, 120, 'walk1' if f else 'walk2', 'happy', 1, force=False)
     you_on(img, t, x + 32, 120, 'walk2' if f else 'walk1', 'happy', 1)
     lx = 80
+    bubbles(t, 5, 3, 0, 320, 0, 100, 3, 7, 5.0)
     leaf(img, lx, 40 + math.sin(lt * 2) * 4, 'happy', 2)
     if lt > 8:
         say(img, lx + 16, 24, '故事继续~', t, t - lt + 8, tail='l')
@@ -952,6 +1126,7 @@ def s_outro(img, t, lt, v):
 def s_end(img, t, lt, v):
     """片尾：晨光书桌，笔记本合上，小杏夹在里面当书签"""
     room(img, t, 0.12, desk=True, lamp=True, wx=220)
+    gcard(t, -9, 263, 44, 43, 34, r=18, refr=0.7, mag=0.03, tint_a=0.05, shadow=0.0)
     d = ImageDraw.Draw(img)
     x0, y0 = 16, 72
     R(d, x0 + 3, y0 + 3, 70, 28, (100, 64, 44))
@@ -1015,6 +1190,47 @@ CFG = {
     '爱一个人爱得/如此慷慨又自私': dict(pal='white', kw=['慷慨', '自私'], kwpal=['yel', 'pink'], size=96, angle=-2),
 }
 
-MVX = MV(song, SHOTS, CFG, danmu=DANMU, title_style=TITLE_STYLE, lyric_base=LYRIC_BASE)
+# 段落切换处：一颗大玻璃透镜横扫过画面
+SECTIONS = [L(0) + 0.12, L(7) + 0.12, 68.2, L(12) + 0.12, L(19) + 0.12, L(24) + 0.12, L(26) + 0.12, 179.3, song.p['end_start']]
+
+
+class GlassMV(MV):
+    def frame(self, t):
+        CUR[0] = t
+        i = self.shot_at(t)
+        GL.clear()
+        img = self.compose(t, i)
+        items = list(GL)
+        t0 = self.shots[i][0]
+        if i > 0 and t - t0 < 0.16:
+            prev = self.compose(t, i - 1)
+            k = (t - t0) / 0.16
+            m = np.tile(BAYER, (H // 4 + 1, W // 4 + 1))[:H, :W] < k
+            img = Image.fromarray(np.where(m[:, :, None], np.asarray(img), np.asarray(prev)).astype(np.uint8))
+        GL.clear()
+        big = img.resize((Z.FW, Z.FH), Image.NEAREST)
+        post(big)
+        for f in items:
+            f(big)
+        for ts in SECTIONS:
+            if ts - 0.3 < t < ts + 0.4:
+                k = (t - ts + 0.3) / 0.7
+                glass(big, lerp(-320, 2240, ease(k)), 470, 250, 250, t=t, refr=1.6, mag=0.22, bezel=90, tint_a=0.04, shadow=0.12)
+        for L_ in self.lyrics:
+            if L_.t0 - 0.1 <= t <= L_.t1 + 0.1:
+                x0, y0, x1, y1 = L_.bbox
+                dt = t - (L_.t0 - 0.12)
+                out = 1 - clamp((t - L_.t1) / 0.2)
+                hw = ((x1 - x0) / 2 + 30) * spring(dt) * out
+                hh = ((y1 - y0) / 2 + 6) * spring(dt - 0.06) * out
+                glass(big, (x0 + x1) / 2, (y0 + y1) / 2 + 4, hw, hh, t=t, refr=0.9, mag=0.03, tint=(255, 255, 255), tint_a=0.10, shadow=0.16)
+        if self.signature:
+            sg = Z.signature(self.signature)
+            glass(big, 960, Z.FH - sg.height / 2 - 6, sg.width / 2 - 6, sg.height / 2 - 8, t=t, refr=0.8, tint_a=0.12, shadow=0.1)
+        self.overlay(big, t, i)
+        return big
+
+
+MVX = GlassMV(song, SHOTS, CFG, danmu=DANMU, title_style=TITLE_STYLE, lyric_base=LYRIC_BASE)
 frame = MVX.frame
 DUR = song.dur
