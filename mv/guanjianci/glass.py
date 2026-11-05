@@ -53,8 +53,9 @@ def glass(big, cx, cy, hw, hh, sdf=None, t=0.0, tint=(255, 255, 255), tint_a=0.1
         sdf = lambda px, py: sdf_rrect(px, py, hw, hh, r)
     bz = bezel or max(6.0, min(34.0, min(hw, hh) * 0.5))
     pad = int(bz * 1.1 + 26)
-    x0, x1 = int(max(0, cx - hw - pad)), int(min(FW, cx + hw + pad))
-    y0, y1 = int(max(0, cy - hh - pad)), int(min(FH, cy + hh + pad + 14))
+    BW, BH = big.size
+    x0, x1 = int(max(0, cx - hw - pad)), int(min(BW, cx + hw + pad))
+    y0, y1 = int(max(0, cy - hh - pad)), int(min(BH, cy + hh + pad + 14))
     if x1 - x0 < 4 or y1 - y0 < 4:
         return 200.0
     crop = big.crop((x0, y0, x1, y1))
@@ -147,6 +148,19 @@ _VIG = None
 
 def post(big, bloom=0.22, vig=0.14):
     global _VIG
+    if big.size != (FW, FH):        # 非 16:9 画布（封面等）：只做柔光，暗角现算
+        a = np.asarray(big).astype(np.float32)
+        BW, BH = big.size
+        small = big.resize((BW // 4, BH // 4), Image.BILINEAR)
+        s = np.asarray(small).astype(np.float32)
+        b = np.clip((s.mean(2, keepdims=True) - 175) / 80, 0, 1) * s
+        bi = Image.fromarray(b.astype(np.uint8)).filter(ImageFilter.GaussianBlur(7)).resize((BW, BH), Image.BILINEAR)
+        a += np.asarray(bi).astype(np.float32) * bloom
+        yy, xx = np.mgrid[0:BH, 0:BW].astype(np.float32)
+        r = np.hypot((xx - BW / 2) / (BW / 2), (yy - BH / 2) / (BH / 2))
+        a *= (1 - vig + vig * (1 - np.clip(r - 0.75, 0, 1) ** 1.5))[..., None]
+        big.paste(Image.fromarray(np.clip(a, 0, 255).astype(np.uint8)))
+        return
     a = np.asarray(big).astype(np.float32)
     if bloom > 0:
         small = big.resize((480, 270), Image.BILINEAR)
