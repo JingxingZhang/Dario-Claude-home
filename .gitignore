@@ -3,3 +3,4 @@
 *.wav
 __pycache__/
 mv/*/out/
+skills/pixel-mv-workspace/
