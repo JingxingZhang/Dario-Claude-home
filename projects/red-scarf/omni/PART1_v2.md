@@ -2,7 +2,7 @@
 
 设置：时长 15s · 16:9 · 1080p · 按顺序上传 `part1_v2_refs/` 里的 6 张参考图（只有第 2 张换成了气球街景）。
 
-改动：删掉报纸梗；开场和气球梗合成一个连续跟拍镜头；剩下的梗每个 3 秒，分成"铺垫 → 围巾出手 → 反应"三拍。镜头从 7 个减到 5 个。
+改动（已按参考图 2 的实际构图修正开场描述）：删掉报纸梗；开场和气球梗合成一个连续跟拍镜头；剩下的梗每个 3 秒，分成"铺垫 → 围巾出手 → 反应"三拍。镜头从 7 个减到 5 个。
 
 | 时间 | 镜头 |
 |---|---|
@@ -19,13 +19,13 @@ A 15-second, 16:9, hand-drawn 2D storybook animation made of five shots joined b
 
 Reference images:
 - The first image is the character model sheet of the main character: a very tall, lanky young woman with a sleepy, half-lidded deadpan face, a short copper-orange bob with blunt bangs, freckles, a long charcoal-grey wool overcoat, black tights, brown lace-up boots, a paper bag with a baguette under her right arm, and an extremely long, chunky, bright red hand-knitted scarf with fringed ends. Keep her design exactly the same in every shot.
-- The second image shows her walking past a small boy in a yellow raincoat with a sky-blue balloon on the windy seaside hill-town street. It also sets the look of the whole film: dark-brown ink outlines, watercolor and gouache textures on paper grain, a soft hazy overcast palette of pale grey-teal, sage and ochre, autumn leaves in the air. Match this look in every shot.
+- The second image shows the balloon moment on the windy seaside hill-town street: she strolls to the right with her scarf streaming back, while behind her on the left a small boy in a yellow raincoat runs after his sky-blue balloon, which is floating up and away just above his reaching hand. It also sets the look of the whole film: dark-brown ink outlines, watercolor and gouache textures on paper grain, a soft hazy overcast palette of pale grey-teal, sage and ochre, autumn leaves in the air. Match this look in every shot.
 - The third, fourth and fifth images show the compositions for the ladder shot, the bird's-nest shot and the café shot.
 - The sixth image shows the final shot: a hilltop park with a yellow-and-blue kite tangled high in a bare tree and a little girl in a green coat pointing at it. The video ends on this composition.
 
 Pacing: give every gag room to breathe. Each one has a clear setup, then one smooth move of the scarf, then a short reaction beat before the cut. Never rush or overlap the gags. She always moves from left to right and never turns back. Her face stays deadpan the whole time. Her scarf does all the helping, moving like a playful living thing, while she keeps strolling.
 
-[0-4s] One continuous wide side-view shot with a slow tracking camera, no cuts. She strolls left to right up the steep, windy cobbled street, the long red scarf streaming behind her, leaves swirling. She passes the small boy in the yellow raincoat just as his sky-blue balloon slips from his fingers; the balloon rises only a little and stays in frame. Without looking, she flicks her head; the tip of her scarf curls twice around the balloon string, pulls it down and places it back in his hand. He blinks up at her, amazed, as she walks on.
+[0-4s] One continuous wide side-view shot with a slow tracking camera, no cuts, composed like the second image. She strolls left to right along the windy cobbled street, the long red scarf streaming back behind her, leaves swirling. Behind her, the small boy in the yellow raincoat runs after his sky-blue balloon as it floats up out of his reach; the balloon stays in frame. Without looking back, she gives a tiny flick of her head; the trailing tip of her scarf curls twice around the balloon string, pulls it down and places it back in the boy's hand. He stops, blinks at her, amazed, as she walks on.
 [4-7s] Side shot by a pastel house, as in the third image. The window cleaner's wooden ladder starts to tip away from the wall while he flails. A beat later her scarf lashes out, loops around the ladder and the iron lamppost and gently pulls the ladder back upright. Still clinging on, he gives a shaky thumbs up as she strolls past.
 [7-10s] Low angle under an autumn tree, as in the fourth image. Two blue eggs roll out of the nest and fall. Her scarf swings beneath them like a soft hammock, catches them, and tosses them gently back up into the nest, one after the other. The mother bird settles onto them, relieved.
 [10-13s] Side shot outside a café with a striped awning, as in the fifth image. The waiter stumbles and his teapot and cups slide off the tray into the air. Her scarf slides underneath like a second tray, catches every piece without spilling a drop and tips them back onto his tray. He freezes mid-stumble on one leg, stunned.
