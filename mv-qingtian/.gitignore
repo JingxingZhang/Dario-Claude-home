@@ -1,0 +1,8 @@
+# 歌词、音频、字体与成片不入库（版权 / 体积）
+lyrics.py
+*.mp4
+*.wav
+*.png
+*.jpg
+fonts/
+audio.json
