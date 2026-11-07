@@ -6,3 +6,4 @@ lyrics.py
 *.jpg
 fonts/
 audio.json
+lyrics_alb.py
