@@ -9,7 +9,8 @@ from scipy import ndimage
 from fontTools.ttLib import TTFont
 from multiprocessing import Pool
 
-W, H, FPS, DUR = 1920, 1080, 30, 30.0
+W, H = int(os.environ.get("CHALK_W", 1920)), int(os.environ.get("CHALK_H", 1080))
+FPS, DUR = 30, 30.0
 NF = int(FPS * DUR)
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONT = os.path.join(HERE, "fonts/MaShanZheng-Regular.ttf")
