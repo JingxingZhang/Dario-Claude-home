@@ -1,0 +1,10 @@
+out/*.mp4
+tools/*.raw
+__pycache__/
+
+# 含整首歌词的文稿与原曲不进公开仓库
+tools/lyrics.txt
+歌词精读.md
+分镜说明.md
+故事.md
+*.flac
