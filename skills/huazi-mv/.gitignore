@@ -1,0 +1,3 @@
+# 含部分歌词的示例配置不进公开仓库（随 .skill 文件分发）
+examples/qingtian/config.py
+__pycache__/

@@ -1,0 +1,162 @@
+<title>{{TITLE}} MV</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow column — a stage on top, one download card per version beneath, newest first */
+:root {
+  --bg: #EEF5FA; --surface: #FFFFFF; --fg: #12304A; --muted: #5A7184;
+  --accent: #E9A90E; --accent-ink: #4A2F00; --line: #D3E2EC; --track: #DCE8F0; --ok: #2E7D4F; --err: #B3261E;
+  --badge: #1E63B8; --badge-ink: #FFFFFF;
+  --display: "ZCOOL KuaiLe", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0E1820; --surface: #16232D; --fg: #E6EEF3; --muted: #9AB0BF;
+  --accent: #F2BD2C; --accent-ink: #2A1C00; --line: #263744; --track: #22323E; --ok: #6CCB94; --err: #FF8A80;
+  --badge: #6FB3E0; --badge-ink: #0E1820; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0E1820; --surface: #16232D; --fg: #E6EEF3; --muted: #9AB0BF;
+  --accent: #F2BD2C; --accent-ink: #2A1C00; --line: #263744; --track: #22323E; --ok: #6CCB94; --err: #FF8A80;
+  --badge: #6FB3E0; --badge-ink: #0E1820; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 860px; margin: 0 auto; padding-block: 28px 48px; display: grid; gap: 20px; }
+header { display: grid; gap: 4px; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(30px, 6vw, 44px); line-height: 1.15; margin: 0; letter-spacing: .02em; text-wrap: balance; }
+h1 span { color: var(--accent); }
+.meta { color: var(--muted); margin: 0; }
+.stage { position: relative; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #000; }
+.stage img, .stage video { width: 100%; height: 100%; display: block; object-fit: cover; }
+.list { display: grid; gap: 12px; }
+.card { display: grid; gap: 12px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.info { min-width: 0; display: grid; gap: 2px; }
+.name { font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.badge { font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 99px; background: var(--badge); color: var(--badge-ink); }
+.spec { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: inherit; font-weight: 700; border: 0; border-radius: 8px; padding: 9px 18px; cursor: pointer;
+  background: var(--accent); color: var(--accent-ink); }
+button.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); font-weight: 500; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.bar { height: 8px; border-radius: 4px; background: var(--track); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+.status { font-size: 13px; color: var(--muted); min-height: 1.2em; margin: 0; font-variant-numeric: tabular-nums; }
+.status.ok { color: var(--ok); } .status.err { color: var(--err); }
+.note { color: var(--muted); font-size: 13px; margin: 0; }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+
+<main>
+  <header>
+    <h1>{{TITLE}} · <span>{{H1_ACCENT}}</span></h1>
+    <p class="meta">{{META}}</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <img id="cover" src="{{COVER_URL}}" alt="{{COVER_ALT}}">
+  </div>
+
+  <section class="list" id="list" aria-label="版本"></section>
+
+  <p class="note">文件在你的浏览器里拼合，下载得到的是一个完整的 mp4，和原片逐字节一致。文件较大，手机上建议连 Wi-Fi。</p>
+</main>
+
+<script>
+const VERSIONS = {{VERSIONS_JSON}};
+const mb = n => (n / 1048576).toFixed(1);
+const list = document.getElementById("list");
+let downloads = null;
+const cache = {}, pending = {};
+
+function card(v) {
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML =
+    '<div class="head"><div class="info"><span class="name"></span><span class="spec"></span></div>' +
+    '<div class="actions"><button class="ghost" data-act="play">载入并播放</button><button data-act="save">下载 1080p</button></div></div>' +
+    '<div class="bar" aria-hidden="true"><i></i></div><p class="status" role="status"></p>';
+  const nm = el.querySelector(".name"); nm.textContent = v.name;
+  if (v.badge) { const b = document.createElement("span"); b.className = "badge"; b.textContent = v.badge; nm.appendChild(b); }
+  el.querySelector(".spec").textContent = v.spec;
+  v.bar = el.querySelector(".bar i"); v.statusEl = el.querySelector(".status");
+  v.btnSave = el.querySelector('[data-act="save"]'); v.btnPlay = el.querySelector('[data-act="play"]');
+  setStatus(v, "点击后会先把 " + v.parts.length + " 段文件拼成一个完整的 mp4（" + mb(v.total) + " MB），再保存。");
+  v.btnPlay.addEventListener("click", () => play(v));
+  v.btnSave.addEventListener("click", () => save(v));
+  list.appendChild(el);
+}
+function setStatus(v, t, k) { v.statusEl.textContent = t; v.statusEl.className = "status" + (k ? " " + k : ""); }
+
+async function assemble(v) {
+  if (cache[v.id]) return cache[v.id];
+  if (pending[v.id]) return pending[v.id];
+  pending[v.id] = (async () => {
+    const blobs = []; let got = 0;
+    for (let i = 0; i < v.parts.length; i++) {
+      const res = await fetch(v.parts[i]);
+      if (!res.ok) throw { code: "fetch", message: "第 " + (i + 1) + " 段读取失败（HTTP " + res.status + "）" };
+      if (res.body) {
+        const reader = res.body.getReader(); const chunks = [];
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value); got += value.byteLength;
+          v.bar.style.width = (got / v.total * 100).toFixed(1) + "%";
+          setStatus(v, "正在载入 " + mb(got) + " / " + mb(v.total) + " MB（第 " + (i + 1) + " / " + v.parts.length + " 段）");
+        }
+        blobs.push(new Blob(chunks));
+      } else {
+        const b = await res.blob(); got += b.size; blobs.push(b);
+        v.bar.style.width = (got / v.total * 100).toFixed(1) + "%";
+      }
+    }
+    const full = new Blob(blobs, { type: "video/mp4" });
+    if (full.size !== v.total) throw { code: "size", message: "拼合后大小不对（" + full.size + " 字节），请刷新重试" };
+    cache[v.id] = full; return full;
+  })();
+  try { return await pending[v.id]; } finally { delete pending[v.id]; }
+}
+
+async function play(v) {
+  v.btnPlay.disabled = true;
+  try {
+    const blob = await assemble(v);
+    const vid = document.createElement("video");
+    vid.controls = true; vid.playsInline = true; vid.src = URL.createObjectURL(blob);
+    vid.addEventListener("error", () => setStatus(v, "这个窗口播放不了拼合后的视频，下载后用系统播放器看即可。", "err"));
+    document.getElementById("stage").replaceChildren(vid);
+    vid.play().catch(() => {});
+    setStatus(v, "已载入完整 1080p，可以播放，也可以直接下载。", "ok");
+  } catch (e) { setStatus(v, (e && e.message) || "载入失败，请刷新页面重试。", "err"); }
+  finally { v.btnPlay.disabled = false; }
+}
+
+async function save(v) {
+  if (!downloads) return;
+  v.btnSave.disabled = true;
+  try {
+    const blob = await assemble(v);
+    setStatus(v, "拼合完成，请在弹出的确认框里点保存。");
+    await downloads.save({ filename: v.filename, data: blob });
+    setStatus(v, "已保存：" + v.filename, "ok");
+  } catch (e) {
+    const c = e && e.code;
+    if (c === "declined") setStatus(v, "已取消保存。文件已在页面里拼好，可以再点一次下载。");
+    else if (c === "rate_limited") setStatus(v, "上一个保存还没结束，稍等几秒再点。", "err");
+    else if (c === "too_large") setStatus(v, "这个设备一次保存不了这么大的文件，请换电脑浏览器下载。", "err");
+    else setStatus(v, "保存没有成功：" + ((e && e.message) || "未知原因") + "。请刷新后重试。", "err");
+  } finally { v.btnSave.disabled = !downloads; }
+}
+
+VERSIONS.forEach(card);
+(async () => {
+  try { downloads = await window.claude?.use?.("downloads"); } catch (e) { downloads = null; }
+  if (!downloads) VERSIONS.forEach(v => {
+    v.btnSave.disabled = true;
+    setStatus(v, "这个窗口不支持保存文件。请在 claude.ai 网页或 Claude App 里打开这个页面再下载。", "err");
+  });
+})();
+</script>
