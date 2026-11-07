@@ -2,6 +2,10 @@
 usage: python3 vertical.py OUT.mp4        (PREVIEW=1.2,5.0 python3 vertical.py  -> preview PNGs)"""
 import os, sys, subprocess, re
 os.environ.setdefault("CHALK_W", "1080"); os.environ.setdefault("CHALK_H", "1920")
+# chalk lettering: 演示夏行楷 (Slidexiaxing, free for commercial use) — tiny ink, wide advance, so scale + tighten
+os.environ.setdefault("CHALK_FONT", "fonts/YanShiXiaXingKai.ttf")
+os.environ.setdefault("CHALK_FONT_SCALE", "1.22"); os.environ.setdefault("CHALK_TRACK", "0.72")
+SHOW_HAND = os.environ.get("HAND") == "1"     # drawn hand is off by default (bare chalk stick instead)
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from scipy import ndimage
@@ -225,11 +229,11 @@ def init():
         al[e.y0:e.y0 + h, e.x0:e.x0 + w] = np.maximum(al[e.y0:e.y0 + h, e.x0:e.x0 + w], e.alpha)
     R.RESIDUE = ndimage.gaussian_filter(al, (5, 14)) * 0.12
     G["track"] = hand_track(E, ERS)
-    cols = set(G["track"][1])
-    G["sprites"] = {c: sprite(c) for c in cols}
-    G["sprites"]["eraser"] = sprite(None)
+    if SHOW_HAND:
+        G["sprites"] = {c: sprite(c) for c in set(G["track"][1])}
+        G["sprites"]["eraser"] = sprite(None)
     # subtitles
-    font = ImageFont.truetype(R.FONT, 54)
+    font = ImageFont.truetype(R.SUB_FONT, 54)
     subs = []
     for i in range(len(LINES)):
         for st, en, txt in subtitle_chunks(i):
@@ -286,7 +290,7 @@ def render_frame(fi):
         if 0 < ue < 1:
             img = draw_eraser(np.clip(img, 0, 255).astype(np.uint8), er.pos(ue)).astype(np.float32)
     pos, col, mode = G["track"]
-    if os.environ.get("NOHAND") is None:
+    if SHOW_HAND:
         key = "eraser" if mode[fi] == "eraser" else col[fi]
         rgb, a, sh, (ax, ay) = G["sprites"][key]
         bob = np.array([np.sin(t * 7.0) * 1.5, np.cos(t * 5.0) * 1.5])

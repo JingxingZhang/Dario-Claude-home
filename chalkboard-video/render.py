@@ -1,7 +1,9 @@
 """Chalkboard-style explainer video: 为什么天空是蓝色？ (30 s, 1920x1080, 30 fps)."""
-# Fonts: put MaShanZheng-Regular.ttf (Google Fonts, OFL) in ./fonts/ — e.g.
+# Fonts in ./fonts/: MaShanZheng-Regular.ttf (Google Fonts, OFL; subtitles + 16:9 version) and
+#   YanShiXiaXingKai.ttf = 演示夏行楷 (free for commercial use; chalk lettering in vertical.py), e.g.
 #   curl -L -o fonts/MaShanZheng-Regular.ttf https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/mashanzheng/MaShanZheng-Regular.ttf
-# Deps: pip install numpy pillow scipy fonttools ; ffmpeg on PATH.
+#   curl -L -o fonts/YanShiXiaXingKai.ttf 'https://cdn.jsdelivr.net/gh/jaywcjlove/free-font@main/docs/fonts/其他字体/演示夏行楷.ttf'
+# Deps: pip install numpy pillow scipy fonttools edge-tts ; ffmpeg on PATH.
 import math, os, sys, subprocess
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
@@ -13,7 +15,10 @@ W, H = int(os.environ.get("CHALK_W", 1920)), int(os.environ.get("CHALK_H", 1080)
 FPS, DUR = 30, 30.0
 NF = int(FPS * DUR)
 HERE = os.path.dirname(os.path.abspath(__file__))
-FONT = os.path.join(HERE, "fonts/MaShanZheng-Regular.ttf")
+FONT = os.path.join(HERE, os.environ.get("CHALK_FONT", "fonts/MaShanZheng-Regular.ttf"))
+SUB_FONT = os.path.join(HERE, "fonts/MaShanZheng-Regular.ttf")
+FONT_SCALE = float(os.environ.get("CHALK_FONT_SCALE", 1.0))   # glyph ink is smaller in some fonts
+TRACK = float(os.environ.get("CHALK_TRACK", 1.0))             # advance multiplier for main-font glyphs
 FALLBACK = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 CMAP = set(TTFont(FONT).getBestCmap().keys())
 rng = np.random.default_rng(7)
@@ -167,7 +172,7 @@ def stroke_element(paths, color, t0, t1, width=7, density=0.55, jitter=1.2):
 
 def text_element(text, x, y, size, color, t0, t1, anchor="l", density=0.6):
     """Supports '^' prefix for a superscript char. Writes char by char, slanted wipe."""
-    font = ImageFont.truetype(FONT, size)
+    font = ImageFont.truetype(FONT, int(size * FONT_SCALE))
     fb = ImageFont.truetype(FALLBACK, int(size * 0.80))
     sup = ImageFont.truetype(FALLBACK, int(size * 0.45))
     glyphs = []
@@ -178,9 +183,11 @@ def text_element(text, x, y, size, color, t0, t1, anchor="l", density=0.6):
             glyphs.append((text[i + 1], sup, -0.42)); i += 2; continue
         f = font if ord(c) in CMAP else fb
         glyphs.append((c, f, 0.0)); i += 1
-    widths = []
+    widths, shifts = [], []
     for c, f, _ in glyphs:
-        widths.append(f.getlength(c) if c != " " else size * 0.35)
+        full = f.getlength(c) if c != " " else size * 0.35
+        tight = full * TRACK if f is font else full
+        widths.append(tight); shifts.append(-(full - tight) / 2)
     tw = sum(widths)
     if anchor == "c": x = x - tw / 2
     x0 = int(x - PAD); y0 = int(y - size * 0.6 - PAD)
@@ -192,10 +199,10 @@ def text_element(text, x, y, size, color, t0, t1, anchor="l", density=0.6):
     k = 0
     cx = x - x0
     boxes = []
-    for (c, f, dy), gw in zip(glyphs, widths):
+    for (c, f, dy), gw, sx in zip(glyphs, widths, shifts):
         if c.strip():
             m = Image.new("L", (w, h), 0)
-            ImageDraw.Draw(m).text((cx, (y - y0) + dy * size), c, font=f, fill=255, anchor="lm" if f is not sup else "lm")
+            ImageDraw.Draw(m).text((cx + sx, (y - y0) + dy * size), c, font=f, fill=255, anchor="lm" if f is not sup else "lm")
             ma = np.asarray(m, np.float32) / 255.0
             yy, xx = np.nonzero(ma > 0.02)
             if len(xx):
